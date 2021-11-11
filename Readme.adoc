@@ -1,0 +1,6 @@
+= DependencyInjection
+François Lamboley <fload@me.com>
+
+Implementation of https://www.avanderlee.com/swift/dependency-injection/.
+
+This should only be used by executable dependencies.
