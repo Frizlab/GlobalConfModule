@@ -3,4 +3,28 @@ François Lamboley <fload@me.com>
 
 Implementation of https://www.avanderlee.com/swift/dependency-injection/.
 
-This should only be used by executable dependencies.
+== Example of Use
+
+Define the service
+[source,swift]
+----
+class ConnectionService { ... }
+
+private struct ConnectionServiceKey : InjectionKey {
+   static var currentValue: ConnectionService = ConnectionService()
+}
+
+extension InjectedValues {
+   var connectionService: ConnectionService {
+      get {Self[ConnectionServiceKey.self]}
+      set {Self[ConnectionServiceKey.self] = newValue}
+   }
+}
+----
+
+And use it
+[source,swift]
+----
+@Injected(\.connectionService)
+var connectionService: ConnectionService
+----
