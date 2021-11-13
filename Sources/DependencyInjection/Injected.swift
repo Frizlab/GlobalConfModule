@@ -9,7 +9,7 @@ public struct Injected<T> {
 	
 	public var wrappedValue: T {
 		get {InjectedValues[keyPath]}
-		set {InjectedValues[keyPath] = newValue}
+//		set {InjectedValues[keyPath] = newValue}
 	}
 	
 	public init(_ keyPath: WritableKeyPath<InjectedValues, T>) {
