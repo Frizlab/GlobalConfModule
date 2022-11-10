@@ -2,6 +2,7 @@ import Foundation
 
 
 
+@MainActor
 @propertyWrapper
 public struct Injected<T> {
 	

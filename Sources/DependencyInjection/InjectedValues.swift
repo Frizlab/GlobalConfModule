@@ -3,6 +3,7 @@ import Foundation
 
 
 /** Provides access to injected dependencies. */
+@MainActor
 public struct InjectedValues {
 	
 	/** This is only used as an accessor to the computed properties within extensions of ``InjectedValues``. */
