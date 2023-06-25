@@ -1,7 +1,7 @@
 = DependencyInjection
 François Lamboley <fload@me.com>
 
-Implementation of https://www.avanderlee.com/swift/dependency-injection/.
+A dependency injection solution, inspired by https://www.avanderlee.com/swift/dependency-injection/.
 
 == Example of Use
 

@@ -2,19 +2,17 @@ import Foundation
 
 
 
-@MainActor
 @propertyWrapper
-public struct Injected<T> {
+public struct Injected<Key : InjectionKey> : Sendable {
 	
-	private let keyPath: WritableKeyPath<InjectedValues, T>
+	private let key: Key.Type
 	
-	public var wrappedValue: T {
-		get {InjectedValues[keyPath]}
-//		set {InjectedValues[keyPath] = newValue}
+	public var wrappedValue: Key.Value! {
+		InjectedValues[key]
 	}
 	
-	public init(_ keyPath: WritableKeyPath<InjectedValues, T>) {
-		self.keyPath = keyPath
+	public init(_ key: Key.Type = Key.self) {
+		self.key = key
 	}
 	
 }

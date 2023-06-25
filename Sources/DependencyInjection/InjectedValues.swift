@@ -3,22 +3,12 @@ import Foundation
 
 
 /** Provides access to injected dependencies. */
-@MainActor
-public struct InjectedValues {
+public struct InjectedValues : Sendable {
 	
-	/** This is only used as an accessor to the computed properties within extensions of ``InjectedValues``. */
-	private static var current = InjectedValues()
-	
-	/** A static subscript for updating the ``InjectionKey.currentValue``. */
-	public static subscript<K>(key: K.Type) -> K.Value where K : InjectionKey {
+	/** A static subscript for updating the ``InjectionKey/currentValue``. */
+	public static subscript<K>(key: K.Type) -> K.Value! where K : InjectionKey {
 		get {key.currentValue}
 		set {key.currentValue = newValue}
-	}
-	
-	/** A static subscript accessor for updating and references dependencies directly. */
-	public static subscript<T>(_ keyPath: WritableKeyPath<InjectedValues, T>) -> T {
-		get {current[keyPath: keyPath]}
-		set {current[keyPath: keyPath] = newValue}
 	}
 	
 }
