@@ -11,5 +11,5 @@ let package = Package(
 		.watchOS(.v6)
 	],
 	products: [.library(name: "DependencyInjection", targets: ["DependencyInjection"])],
-	targets: [.target(name: "DependencyInjection")]
+	targets: [.target(name: "DependencyInjection", path: "Sources")]
 )
