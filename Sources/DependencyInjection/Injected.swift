@@ -15,4 +15,8 @@ public struct Injected<Key : InjectionKey> : Sendable {
 		self.key = key
 	}
 	
+	public init(_ keyPath: KeyPath<InjectionKeys.Type, Key.Type>) {
+		self.key = InjectionKeys.self[keyPath: keyPath]
+	}
+	
 }
