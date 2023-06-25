@@ -11,5 +11,8 @@ let package = Package(
 		.watchOS(.v6)
 	],
 	products: [.library(name: "DependencyInjection", targets: ["DependencyInjection"])],
-	targets: [.target(name: "DependencyInjection", path: "Sources")]
+	dependencies: [.package(url: "https://github.com/apple/swift-service-context.git", from: "1.0.0")],
+	targets: [.target(name: "DependencyInjection", dependencies: [
+		.product(name: "ServiceContextModule", package: "swift-service-context"),
+	], path: "Sources")]
 )

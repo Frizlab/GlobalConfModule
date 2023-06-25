@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "swift-service-context",
+        "repositoryURL": "https://github.com/apple/swift-service-context.git",
+        "state": {
+          "branch": null,
+          "revision": "ce0141c8f123132dbd02fd45fea448018762df1b",
+          "version": "1.0.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

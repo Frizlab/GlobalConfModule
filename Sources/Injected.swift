@@ -1,23 +1,30 @@
 import Foundation
 
+@_exported import ServiceContextModule
 
+
+
+private var context = ServiceContext.topLevel
 
 @propertyWrapper
-public struct Injected<Key : InjectionKey> : Sendable {
+public struct Injected<Key> {
 	
-	private let key: Key.Type
-	
-	public var wrappedValue: Key.Value! {
-		InjectedValues[key]
+	public static func value(_ keyPath: KeyPath<ServiceContext, Key?>) -> Key! {
+		context[keyPath: keyPath]
 	}
 	
-	public init(_ key: Key.Type = Key.self) {
-		self.key = key
+	public static func setValue(_ value: Key, for keyPath: WritableKeyPath<ServiceContext, Key?>) {
+		context[keyPath: keyPath] = value
 	}
 	
-	/* This would be amazing, but it does not work: <https://github.com/apple/swift/issues/57696>. */
-//	public init(_ keyPath: KeyPath<InjectionKeys.Type, Key.Type>) {
-//		self.key = InjectionKeys.self[keyPath: keyPath]
-//	}
+	public var wrappedValue: Key! {
+		Self.value(keyPath)
+	}
+	
+	public init(_ keyPath: KeyPath<ServiceContext, Key?>) {
+		self.keyPath = keyPath
+	}
+	
+	private let keyPath: KeyPath<ServiceContext, Key?>
 	
 }
