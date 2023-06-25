@@ -15,8 +15,9 @@ public struct Injected<Key : InjectionKey> : Sendable {
 		self.key = key
 	}
 	
-	public init(_ keyPath: KeyPath<InjectionKeys.Type, Key.Type>) {
-		self.key = InjectionKeys.self[keyPath: keyPath]
-	}
+	/* This would be amazing, but it does not work: <https://github.com/apple/swift/issues/57696>. */
+//	public init(_ keyPath: KeyPath<InjectionKeys.Type, Key.Type>) {
+//		self.key = InjectionKeys.self[keyPath: keyPath]
+//	}
 	
 }
