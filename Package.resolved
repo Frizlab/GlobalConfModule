@@ -1,16 +1,32 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "swift-service-context",
-        "repositoryURL": "https://github.com/apple/swift-service-context.git",
-        "state": {
-          "branch": null,
-          "revision": "ce0141c8f123132dbd02fd45fea448018762df1b",
-          "version": "1.0.0"
-        }
+  "pins" : [
+    {
+      "identity" : "safeglobal",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Frizlab/SafeGlobal.git",
+      "state" : {
+        "revision" : "aed1d6c7db070320e0d8e332c29bddfabb26e414",
+        "version" : "0.3.0"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "swift-service-context",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-service-context.git",
+      "state" : {
+        "revision" : "ce0141c8f123132dbd02fd45fea448018762df1b",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "fa8f95c2d536d6620cc2f504ebe8a6167c9fc2dd",
+        "version" : "510.0.1"
+      }
+    }
+  ],
+  "version" : 2
 }

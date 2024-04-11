@@ -1,9 +1,11 @@
 import Foundation
 
+import SafeGlobal
 @_exported import ServiceContextModule
 
 
 
+@SafeGlobal
 private var context = ServiceContext.topLevel
 
 @propertyWrapper
