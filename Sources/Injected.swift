@@ -9,24 +9,24 @@ import SafeGlobal
 private var context = ServiceContext.topLevel
 
 @propertyWrapper
-public struct Injected<Key> {
+public struct Injected<InjectedType> {
 	
-	public static func value(_ keyPath: KeyPath<ServiceContext, Key>) -> Key {
+	public static func value(_ keyPath: KeyPath<ServiceContext, InjectedType>) -> InjectedType {
 		context[keyPath: keyPath]
 	}
 	
-	public static func setValue(_ value: Key, for keyPath: WritableKeyPath<ServiceContext, Key>) {
+	public static func setValue(_ value: InjectedType, for keyPath: WritableKeyPath<ServiceContext, InjectedType>) {
 		context[keyPath: keyPath] = value
 	}
 	
-	public var wrappedValue: Key {
+	public var wrappedValue: InjectedType {
 		Self.value(keyPath)
 	}
 	
-	public init(_ keyPath: KeyPath<ServiceContext, Key>) {
+	public init(_ keyPath: KeyPath<ServiceContext, InjectedType>) {
 		self.keyPath = keyPath
 	}
 	
-	private let keyPath: KeyPath<ServiceContext, Key>
+	private let keyPath: KeyPath<ServiceContext, InjectedType>
 	
 }
