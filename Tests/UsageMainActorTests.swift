@@ -19,6 +19,13 @@ final class UsageMainActorTests : XCTestCase {
 		XCTAssertTrue(c.mainActorServiceFromKeyPath === Injected<MainActorService>.value)
 		
 		XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
+		
+		let oldOtherActor = c.otherMainActorService
+		Injected.setValue(c.mainActorService, for: \.mainActorService2)
+		XCTAssertTrue(c.otherMainActorService === Injected<MainActorService>.value)
+		
+		Injected<MainActorService>.value = oldOtherActor
+		XCTAssertTrue(c.otherMainActorService !== c.mainActorService)
 	}
 	
 	@MainActor

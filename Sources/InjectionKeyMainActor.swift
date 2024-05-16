@@ -19,22 +19,38 @@ public protocol InjectionKeyMainActor : ServiceContextKey {
 public extension Injected {
 	
 	@MainActor
-	static func value<InjectedKey : InjectionKeyMainActor>(_ keyType: InjectedKey.Type = InjectedKey.self) -> InjectedType
+	init<InjectedKey : InjectionKeyMainActor>(_ keyPath: KeyPath<InjectionKeys, InjectedKey.Type>)
+	where InjectedKey.Value == InjectedType {
+		let defaultValue = InjectedKey.defaultValue
+		self.erasedAccessor = { context[InjectedKey.self] ?? defaultValue! }
+	}
+	
+}
+
+public extension Injected {
+	
+	@MainActor
+	static func value<InjectedKey : InjectionKeyMainActor>(for keyType: InjectedKey.Type = InjectedKey.self) -> InjectedType
 	where InjectedKey.Value == InjectedType {
 		return context[InjectedKey.self] ?? InjectedKey.defaultValue!
 	}
 	
 	@MainActor
-	static func value<InjectedKey : InjectionKeyMainActor>(_ keyPath: KeyPath<InjectionKeys, InjectedKey.Type>) -> InjectedType
+	static func setValue<InjectedKey : InjectionKeyMainActor>(_ newValue: InjectedType, for keyType: InjectedKey.Type = InjectedKey.self)
+	where InjectedKey.Value == InjectedType {
+		context[InjectedKey.self] = newValue
+	}
+	
+	@MainActor
+	static func value<InjectedKey : InjectionKeyMainActor>(for keyPath: KeyPath<InjectionKeys, InjectedKey.Type>) -> InjectedType
 	where InjectedKey.Value == InjectedType {
 		return context[InjectedKey.self] ?? InjectedKey.defaultValue
 	}
 	
 	@MainActor
-	init<InjectedKey : InjectionKeyMainActor>(_ keyPath: KeyPath<InjectionKeys, InjectedKey.Type>)
+	static func setValue<InjectedKey : InjectionKeyMainActor>(_ newValue: InjectedType, for keyPath: KeyPath<InjectionKeys, InjectedKey.Type>)
 	where InjectedKey.Value == InjectedType {
-		let defaultValue = InjectedKey.defaultValue
-		self.erasedAccessor = { context[InjectedKey.self] ?? defaultValue! }
+		context[InjectedKey.self] = newValue
 	}
 	
 }
