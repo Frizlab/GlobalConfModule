@@ -24,6 +24,9 @@ let package = Package(
 		.target(name: "DependencyInjection", dependencies: [
 			.product(name: "SafeGlobal",           package: "SafeGlobal"),
 			.product(name: "ServiceContextModule", package: "swift-service-context"),
-		], path: "Sources", swiftSettings: swiftSettings)
+		], path: "Sources", swiftSettings: swiftSettings),
+		.testTarget(name: "DependencyInjectionTests", dependencies: [
+			"DependencyInjection"
+		], path: "Tests", swiftSettings: swiftSettings)
 	]
 )

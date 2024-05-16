@@ -1,23 +1,11 @@
 import Foundation
 
+import ServiceContextModule
 
 
-public protocol AutoInjectable {
-	
-	static var injectionPath: WritableKeyPath<ServiceContext, Self> {get}
-	
-}
 
-
-public extension Injected where InjectedType : AutoInjectable {
+public protocol AutoInjectable : Sendable {
 	
-	static var value: InjectedType {
-		get {Self.value(InjectedType.injectionPath)}
-		set {Self.setValue(newValue, for: InjectedType.injectionPath)}
-	}
-	
-	init() {
-		self.init(InjectedType.injectionPath)
-	}
+	associatedtype AutoInjectionKey : InjectionKey where AutoInjectionKey.Value == Self
 	
 }
