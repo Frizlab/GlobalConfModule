@@ -15,7 +15,9 @@ public final class NoActorService : Sendable {
 extension NoActorService : AutoInjectable
 {public struct AutoInjectionKey : InjectionKey {
 	public typealias Value = NoActorService
-	public static let defaultValue = { @Sendable (_: isolated DummyInjectionActor) -> Value? in
-		return .init()
-	}
+	public static let defaultValue: Value! = .init()
 }}
+
+extension InjectionKeys {
+	var noActorService: NoActorService.AutoInjectionKey.Type {NoActorService.AutoInjectionKey.self}
+}
