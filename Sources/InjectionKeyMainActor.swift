@@ -32,7 +32,7 @@ public extension Injected {
 	@MainActor
 	static func value<InjectedKey : InjectionKeyMainActor>(for keyType: InjectedKey.Type = InjectedKey.self) -> InjectedType
 	where InjectedKey.Value == InjectedType {
-		return context[InjectedKey.self] ?? InjectedKey.defaultValue!
+		return context[InjectedKey.self] ?? InjectedKey.defaultValue
 	}
 	
 	@MainActor
@@ -42,15 +42,17 @@ public extension Injected {
 	}
 	
 	@MainActor
+	@inlinable
 	static func value<InjectedKey : InjectionKeyMainActor>(for keyPath: KeyPath<InjectionKeys, InjectedKey.Type>) -> InjectedType
 	where InjectedKey.Value == InjectedType {
-		return context[InjectedKey.self] ?? InjectedKey.defaultValue
+		return value(for: InjectedKey.self)
 	}
 	
 	@MainActor
+	@inlinable
 	static func setValue<InjectedKey : InjectionKeyMainActor>(_ newValue: InjectedType, for keyPath: KeyPath<InjectionKeys, InjectedKey.Type>)
 	where InjectedKey.Value == InjectedType {
-		context[InjectedKey.self] = newValue
+		setValue(newValue, for: InjectedKey.self)
 	}
 	
 }
@@ -58,9 +60,10 @@ public extension Injected {
 public extension Injected where InjectedType : AutoInjectableMainActor {
 	
 	@MainActor
+	@inlinable
 	static var value: InjectedType {
-		get {context[InjectedType.AutoInjectionKey.self] ?? InjectedType.AutoInjectionKey.defaultValue}
-		set {context[InjectedType.AutoInjectionKey.self] = newValue}
+		get {   value(          for: InjectedType.AutoInjectionKey.self)}
+		set {setValue(newValue, for: InjectedType.AutoInjectionKey.self)}
 	}
 	
 	@MainActor
