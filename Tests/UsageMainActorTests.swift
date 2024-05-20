@@ -24,6 +24,25 @@ final class UsageMainActorTests : XCTestCase {
 		InjectionContext.setRootValue(c.mainActorService, for: \.mainActorService2)
 		XCTAssertTrue(c.otherMainActorService === Injected<MainActorService>.value)
 		
+		InjectionContext.withValue(oldOtherActor, for: \.mainActorService2, operation: {
+			XCTAssertTrue(c.otherMainActorService === oldOtherActor)
+			XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
+		})
+		
+		InjectionContext.withValues{
+			$0[OtherInjectionKey.self] = MainActorService()
+		}operation:{
+			XCTAssertTrue(c.otherMainActorService !== oldOtherActor)
+			XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
+		}
+		
+		Injected<MainActorService>.withValue(MainActorService()){
+			XCTAssertTrue(c.otherMainActorService !== oldOtherActor)
+			XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
+		}
+		
+		XCTAssertTrue(c.otherMainActorService === Injected<MainActorService>.value)
+		
 		Injected<MainActorService>.rootValue = oldOtherActor
 		XCTAssertTrue(c.otherMainActorService !== c.mainActorService)
 	}
