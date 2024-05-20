@@ -24,9 +24,9 @@ let package = Package(
 		.target(name: "Configuration", dependencies: [
 			.product(name: "SafeGlobal",           package: "SafeGlobal"),
 			.product(name: "ServiceContextModule", package: "swift-service-context"),
-		], path: "Sources", swiftSettings: swiftSettings),
+		], swiftSettings: swiftSettings),
 		.testTarget(name: "ConfigurationTests", dependencies: [
 			"Configuration"
-		], path: "Tests", swiftSettings: swiftSettings)
+		], swiftSettings: swiftSettings)
 	]
 )
