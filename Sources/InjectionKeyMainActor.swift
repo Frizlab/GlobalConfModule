@@ -37,6 +37,19 @@ public extension Injected where InjectedType : AutoInjectableMainActor {
 	
 	@MainActor
 	@inlinable
+	static func withValue<T>(_ newValue: InjectedType.AutoInjectionKey.Value, operation: () throws -> T) rethrows -> T {
+		try InjectionContext.withValue(newValue, for: InjectedType.AutoInjectionKey.self, operation: operation)
+	}
+	
+	@MainActor
+	@inlinable
+	@_unsafeInheritExecutor /* Same as withValue declared in the stdlib (and ServiceContext); because we do not want to hop off the executor at all. */
+	static func withValue<T>(_ newValue: InjectedType.AutoInjectionKey.Value, operation: () async throws -> T) async rethrows -> T {
+		try await InjectionContext.withValue(newValue, for: InjectedType.AutoInjectionKey.self, operation: operation)
+	}
+	
+	@MainActor
+	@inlinable
 	static var rootValue: InjectedType {
 		get {InjectionContext   .rootValue(          for: InjectedType.AutoInjectionKey.self)}
 		set {InjectionContext.setRootValue(newValue, for: InjectedType.AutoInjectionKey.self)}
@@ -78,6 +91,21 @@ public extension InjectionContext {
 	@MainActor
 	@_unsafeInheritExecutor /* Same as withValue declared in the stdlib (and ServiceContext); because we do not want to hop off the executor at all. */
 	static func withValue<InjectedKey : InjectionKeyMainActor, T>(_ newValue: InjectedKey.Value, for keyType: InjectedKey.Type = InjectedKey.self, operation: () async throws -> T) async rethrows -> T {
+		var newContext = InjectionContext.current
+		newContext[InjectedKey.self] = newValue
+		return try await ServiceContext.$current.withValue(newContext, operation: operation)
+	}
+	
+	@MainActor
+	static func withValue<InjectedKey : InjectionKeyMainActor, T>(_ newValue: InjectedKey.Value, for keyPath: KeyPath<InjectionKeys, InjectedKey.Type>, operation: () throws -> T) rethrows -> T {
+		var newContext = InjectionContext.current
+		newContext[InjectedKey.self] = newValue
+		return try InjectionContext.$forCurrentTask.withValue(newContext, operation: operation)
+	}
+	
+	@MainActor
+	@_unsafeInheritExecutor /* Same as withValue declared in the stdlib (and ServiceContext); because we do not want to hop off the executor at all. */
+	static func withValue<InjectedKey : InjectionKeyMainActor, T>(_ newValue: InjectedKey.Value, for keyPath: KeyPath<InjectionKeys, InjectedKey.Type>, operation: () async throws -> T) async rethrows -> T {
 		var newContext = InjectionContext.current
 		newContext[InjectedKey.self] = newValue
 		return try await ServiceContext.$current.withValue(newContext, operation: operation)
