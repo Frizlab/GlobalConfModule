@@ -6,6 +6,6 @@ import ServiceContextModule
 
 public protocol AutoInjectable : Sendable {
 	
-	associatedtype AutoInjectionKey : InjectionKey where AutoInjectionKey.Value == Self
+	associatedtype AutoInjectionKey : ConfKey where AutoInjectionKey.Value == Self
 	
 }

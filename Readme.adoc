@@ -1,27 +1,28 @@
-= DependencyInjection
+= Configuration
 François Lamboley <fload@me.com>
 
-A fully concurrency-ready dependency injection solution for Swift, loosely inspired by https://www.avanderlee.com/swift/dependency-injection/.
+A fully concurrency-ready generic configuration and dependency injection solution for Swift,
+ loosely inspired by <https://www.avanderlee.com/swift/dependency-injection/>.
 
-== Basic Usage
+== Basic Usage (Dependency Injection)
 
-Defining the service:
+Defining a service:
 [source,swift]
 ----
-public protocol MyService { ... }
+public protocol MyService : Sendable { ... }
 public final class DefaultMyService : MyService { ... }
 
-public struct MyServiceInjectionKey : InjectionKey {
+public struct MyServiceConfKey : ConfKey {
    public typealias Value = MyService
    /* If no default value make sense, you can set `nil` here.
     * Be aware the app _will_ crash if the dependency is accessed before the value is set! */
    public static let defaultValue: Value! = DefaultMyService()
 }
-public extension InjectionKeys {
-   var myService: MyServiceInjectionKey.Type {MyServiceInjectionKey.self}
+public extension ConfKeys {
+   var myService: MyServiceConfKey.Type {MyServiceConfKey.self}
 }
 /* You can have as many injected instances of your service as you want by
- *  adding more injection keys and variables in the `InjectionKeys` “namespace”. */
+ *  adding more injection keys and variables in the `ConfKeys` “namespace”. */
 ----
 
 Using it:
@@ -41,7 +42,30 @@ Changing the injected instance:
 [source,swift]
 ----
 func myAppInit() {
-   Injected.setValue(newService, for: \.myService)
+   Conf.setRootValue(newService, for: \.myService)
+}
+----
+
+== Basic Usage (Framework Configuration)
+
+[source,swift]
+----
+/* Declare the configuration key. */
+public struct MyConfKey : ConfKey {
+   public typealias Value = Int
+   public static let defaultValue: Value! = 42
+}
+public extension ConfKeys {
+   /* If you’re writing a framework you should prefix the variable to avoid clash with other frameworks. */
+   var myConf: MyConfKey.Type {MyConfKey.self}
+}
+
+/* Use it in your code. */
+if Conf[\.myConf] == 42 {...}
+
+/* Optionally you can define an internal convenience on Conf for easier access. */
+internal extension Conf {
+   static var myConf: Int {Conf[\.myConf]}
 }
 ----
 
@@ -56,7 +80,7 @@ For these services you can use the `AutoInjectable` protocol:
 public final class MyService { ... }
 
 extension MyService : AutoInjectable {
-   public struct AutoInjectionKey : InjectionKey {
+   public struct AutoInjectionKey : ConfKey {
       public typealias Value = MyService
       public static let defaultValue: Value! = .init()
    }
@@ -78,23 +102,18 @@ Note services that are protocols cannot be auto-injectable.
 
 == `@MainActor` or Other Isolated Services
 
-For `@MainActor` services you must use the `InjectionKeyMainActor` and `AutoInjectableMainActor` protocols instead of their non-`MainActor` equivalents.
+For `@MainActor` services you must use the `ConfKeyMainActor` and `AutoInjectableMainActor` protocols instead of their non-`MainActor` equivalents.
 
 For services isolated on other global (or non-global) actors you’ll have to do a little bit more boilerplate.
 
-:injection-key: link:./Sources/InjectionKeyMainActor.swift[InjectionKeyMainActor.swift]
-:auto-injectable: link:./Sources/AutoInjectableMainActor.swift[AutoInjectableMainActor.swift]
-
 === For Global Actors
-Basically you will need copy the {injection-key} file and replace the `MainActor` instances by your own global actor.
-
-Optionally, you can also copy and adapt the {auto-injectable} file if you need auto-injection.
+Basically you will need copy all the `*MainActor` files and replace the `MainActor` instances by your own global actor.
 
 === For Non-Global Actors
 This is probably a very advance use-case.
 If you need that, ask yourself why and see if you really do.
 
-Like for global actors you will need to copy and adapt the {injection-key} and {auto-injectable} files.
+Like for global actors you will need to copy and adapt the `*MainActor` files.
 
 I have not tried it, but most likely you will have to remove the global actor annotations and add the `isolated` parameter you need in the different methods in the files.
 

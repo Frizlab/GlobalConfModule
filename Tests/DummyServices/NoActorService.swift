@@ -1,6 +1,6 @@
 import Foundation
 
-import DependencyInjection
+import Configuration
 
 
 
@@ -13,11 +13,11 @@ public final class NoActorService : Sendable {
 
 
 extension NoActorService : AutoInjectable
-{public struct AutoInjectionKey : InjectionKey {
+{public struct AutoInjectionKey : ConfKey {
 	public typealias Value = NoActorService
 	public static let defaultValue: Value! = .init()
 }}
 
-extension InjectionKeys {
+extension ConfKeys {
 	var noActorService: NoActorService.AutoInjectionKey.Type {NoActorService.AutoInjectionKey.self}
 }

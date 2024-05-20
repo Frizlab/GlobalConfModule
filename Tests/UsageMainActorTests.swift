@@ -2,7 +2,7 @@ import Foundation
 import XCTest
 
 /* No @testable import: we mostly test whether the architecture works; we must be as close as possible to a regular client’s use. */
-import DependencyInjection
+import Configuration
 
 
 
@@ -15,22 +15,26 @@ final class UsageMainActorTests : XCTestCase {
 		c.mainActorService.printHello()
 		c.mainActorServiceFromKeyPath.printHello()
 		Injected<MainActorService>.value.printHello()
+		XCTAssertTrue(c.mainActorService === Conf[\.mainActorService])
+		XCTAssertTrue(c.mainActorService === Conf[key: MainActorService.AutoInjectionKey.self])
+		XCTAssertTrue(c.mainActorService === Conf.rootValue(for: MainActorService.AutoInjectionKey.self))
 		XCTAssertTrue(c.mainActorService === Injected<MainActorService>.value)
 		XCTAssertTrue(c.mainActorServiceFromKeyPath === Injected<MainActorService>.value)
 		
 		XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
 		
 		let oldOtherActor = c.otherMainActorService
-		InjectionContext.setRootValue(c.mainActorService, for: \.mainActorService2)
+		Conf.setRootValue(c.mainActorService, for: \.mainActorService2)
 		XCTAssertTrue(c.otherMainActorService === Injected<MainActorService>.value)
 		
-		InjectionContext.withValue(oldOtherActor, for: \.mainActorService2, operation: {
+		Conf.withValue(oldOtherActor, for: \.mainActorService2, operation: {
+			XCTAssertTrue(c.mainActorService === Conf[\.mainActorService])
 			XCTAssertTrue(c.otherMainActorService === oldOtherActor)
 			XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
 		})
 		
-		InjectionContext.withValues{
-			$0[OtherInjectionKey.self] = MainActorService()
+		Conf.withValues{
+			$0[\.mainActorService2] = MainActorService()
 		}operation:{
 			XCTAssertTrue(c.otherMainActorService !== oldOtherActor)
 			XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
