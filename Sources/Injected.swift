@@ -1,12 +1,6 @@
 import Foundation
 
-import SafeGlobal
-import ServiceContextModule
 
-
-
-@SafeGlobal
-internal var context = ServiceContext.topLevel
 
 @propertyWrapper
 public struct Injected<InjectedType : Sendable> : Sendable {
