@@ -24,17 +24,17 @@ final class ConfigurationMacrosTests : XCTestCase {
 #if canImport(ConfigurationMacros)
 		assertMacroExpansion("""
 				import Configuration
-				#conf("MyBool", Bool.self, ["myBool"], true)
+				#conf("myBool", Bool.self, "MyBool", true)
 				""",
 			expandedSource: #"""
 				import Configuration
-				public struct MyBool : Sendable {
-				    public typealias Value = Bool
-				    public static let defaultValue: Value! = true
-				}
 				extension ConfKeys {
-				    public var myBool: MyBool.Type {
-				        MyBool.self
+				    public struct MyBoolConfKey : ConfKey {
+				        public typealias Value = Bool
+				        public static let defaultValue: Bool! = true
+				    }
+				    public var myBool: MyBoolConfKey.Type {
+				        MyBoolConfKey.self
 				    }
 				}
 				extension Conf {
@@ -55,9 +55,22 @@ final class ConfigurationMacrosTests : XCTestCase {
 		assertMacroExpansion("""
 				#conf("OSLog", OSLog?.self, unsafeNonIsolated: true, ["oslog"], .default)
 				""",
-			expandedSource: """
-				TODO
-				""",
+			expandedSource: #"""
+				extension ConfKeys {
+				    public struct OSLogConfKey : ConfKey {
+				        public typealias Value = OSLog?
+				        public nonisolated (unsafe) static let defaultValue: OSLog?! = .default
+				    }
+				    public var oslog: OSLogConfKey.Type {
+				        OSLogConfKey.self
+				    }
+				}
+				extension Conf {
+				    internal var oslog: OSLog? {
+				        Conf[\ConfKeys.oslog]
+				    }
+				}
+				"""#,
 			macros: testMacros
 		)
 #else
