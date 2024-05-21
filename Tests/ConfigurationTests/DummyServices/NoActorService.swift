@@ -20,4 +20,10 @@ extension NoActorService : AutoInjectable
 
 extension ConfKeys {
 	var noActorService: NoActorService.AutoInjectionKey.Type {NoActorService.AutoInjectionKey.self}
+	var noActorFactoryService: NoActorFactoryConfKey.Type {NoActorFactoryConfKey.self}
+}
+
+public struct NoActorFactoryConfKey : ConfKey {
+	public typealias Value = @Sendable () -> NoActorService
+	public static let defaultValue: Value! = { .init() }
 }

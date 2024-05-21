@@ -16,9 +16,16 @@ final class UsageTests : XCTestCase {
 		XCTAssertTrue(noActorServiceFromKeyPath === Injected<NoActorService>.value)
 	}
 	
+	func testUsingNoActorServiceWithFactory() {
+		XCTAssertTrue(noActorService === noActorService)
+		XCTAssertTrue(noActorFactoryService !== noActorFactoryService)
+	}
+	
 	@Injected()
 	var noActorService: NoActorService
 	@Injected(\.noActorService)
 	var noActorServiceFromKeyPath: NoActorService
+	@Injected(\.noActorFactoryService)
+	var noActorFactoryService: NoActorService
 	
 }

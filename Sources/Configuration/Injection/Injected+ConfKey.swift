@@ -12,4 +12,10 @@ public extension Injected {
 		self.erasedAccessor = { Conf.currentContext[InjectedKey.self] ?? defaultValue! }
 	}
 	
+	init<InjectedKey : ConfKey>(_ keyPath: KeyPath<ConfKeys, InjectedKey.Type>)
+	where InjectedKey.Value == @Sendable () -> InjectedType {
+		let defaultValue = InjectedKey.defaultValue
+		self.erasedAccessor = { Conf.currentContext[InjectedKey.self]?() ?? defaultValue!() }
+	}
+	
 }
