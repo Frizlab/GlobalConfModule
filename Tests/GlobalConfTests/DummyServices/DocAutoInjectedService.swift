@@ -8,9 +8,9 @@ public final class DocAutoInjectedService {
 	
 }
 
+extension ConfKeys {
+	#declareServiceKey(nil, DocAutoInjectedService.self, "DocAutoInjectedServiceKey", defaultValue: .init())
+}
 extension DocAutoInjectedService : AutoInjectable {
-	public struct AutoInjectionKey : ConfKey {
-		public typealias Value = DocAutoInjectedService
-		public static let defaultValue: Value! = .init()
-	}
+	public typealias AutoInjectionKey = ConfKeys.DocAutoInjectedServiceKey
 }
