@@ -12,14 +12,12 @@ public final class NoActorService : Sendable {
 }
 
 
-extension NoActorService : AutoInjectable
-{public struct AutoInjectionKey : ConfKey {
-	public typealias Value = NoActorService
-	public static let defaultValue: Value! = .init()
-}}
+extension NoActorService : AutoInjectable {
+	public typealias AutoInjectionKey = ConfKeys.BestKey
+}
 
 extension ConfKeys {
-	var noActorService: NoActorService.AutoInjectionKey.Type {NoActorService.AutoInjectionKey.self}
+	#declareServiceKey("noActorService", NoActorService.self, "BestKey", defaultValue: .init())
 	var noActorFactoryService: NoActorFactoryConfKey.Type {NoActorFactoryConfKey.self}
 }
 

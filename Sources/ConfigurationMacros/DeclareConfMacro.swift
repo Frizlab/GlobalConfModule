@@ -20,22 +20,15 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 	 *   - The path to the conf key to create;
 	 *   - The default value for the configuration. */
 	public static func expansion(of node: some FreestandingMacroExpansionSyntax, in context: some MacroExpansionContext) throws -> [DeclSyntax] {
-		let declareConvenienceAccessor = switch node.macroName.text {
-			case "declareConf":           true
-			case "declareConfOnly":       false
-			case "declareService":        false
-			case "declareServiceFactory": false
-			default: throw Err.internalError(message: "Unknown macro name \(node.macroName.text)")
-		}
 		if node.macroName.text == "declareServiceFactory" {
 			throw Err.internalError(message: "Not Implemented")
 		}
 		
 		var args = Array(node.arguments.reversed())
-		/* Get confKeyPath. */
-		let confKeyPathArg = try args.popLast() ?! Err.missingArgument(argname: "confKeyPath")
-		guard confKeyPathArg.label == nil else {
-			throw Err.invalidSyntax(message: "confKeyPath argument should not have a label")
+		/* Get confKey. */
+		let confKeyArg = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+		guard confKeyArg.label == nil else {
+			throw Err.invalidSyntax(message: "confKey argument should not have a label")
 		}
 		/* Get confType. */
 		let confTypeArg = try args.popLast() ?! Err.missingArgument(argname: "confType")
@@ -59,14 +52,6 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		} else {
 			nonIsolatedArg = LabeledExprSyntax(label: "unsafeNonIsolated", expression: BooleanLiteralExprSyntax(booleanLiteral: false))
 		}
-		/* Get optional parameter conf container or next arg. */
-		let containerArg: LabeledExprSyntax
-		if curAmbiguous.label?.text == "in" {
-			containerArg = curAmbiguous
-			curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "defaultValue")
-		} else {
-			containerArg = LabeledExprSyntax(label: "in", expression: ExprSyntax(stringLiteral: "ConfKeys.self"))
-		}
 		/* Get optional parameter custom conf key name or next arg. */
 		let confKeyNameArg: LabeledExprSyntax
 		let defaultValueArg: LabeledExprSyntax
@@ -86,73 +71,41 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		}
 		
 		return try expansionFor(
-			confKeyPathArg: confKeyPathArg,
+			confKeyArg: confKeyArg,
 			confTypeArg: confTypeArg,
 			actorArg: actorArg,
 			nonIsolatedArg: nonIsolatedArg,
-			containerArg: containerArg,
 			confKeyNameArg: confKeyNameArg,
 			defaultValueArg: defaultValueArg,
-			declareConvenienceAccessor: declareConvenienceAccessor,
 			in: context
 		)
 	}
 	
 	private static func expansionFor(
-		confKeyPathArg: LabeledExprSyntax,
+		confKeyArg: LabeledExprSyntax,
 		confTypeArg: LabeledExprSyntax,
 		actorArg: LabeledExprSyntax,
 		nonIsolatedArg: LabeledExprSyntax,
-		containerArg: LabeledExprSyntax,
 		confKeyNameArg: LabeledExprSyntax,
 		defaultValueArg: LabeledExprSyntax,
-		declareConvenienceAccessor: Bool,
 		in context: some MacroExpansionContext
 	) throws -> [DeclSyntax] {
-		let confKeyPath = try keyPath             (from: confKeyPathArg, argname: "confKeyPath")
+		let confKey     = try staticString        (from: confKeyArg,     argname: "confKey")
 		let confType    = try swiftType           (from: confTypeArg,    argname: "confType")
 		let actor       = try optionalSwiftType   (from: actorArg,       argname: "globalActor")
 		let nonIsolated = try bool                (from: nonIsolatedArg, argname: "unsafeNonIsolated")
-		let container   = try swiftType           (from: containerArg,   argname: "confContainer")
-		let confKeyName = try optionalStaticString(from: confKeyNameArg, argname: "customConfKeyName") ?? "ConfKey_\(confKeyPath.last!)"
-		if confKeyPath.count == 1 && container.description != "ConfKeys" {
-			context.diagnose(
-				Diagnostic(
-					node: Syntax(confKeyPathArg),
-					message: SimpleDiagnosticMessage(
-						message: "The conf path only contain one element but the conf keys container is not ConfKeys. This is not possible.",
-						diagnosticID: MessageID(domain: "Configuration", id: "InvalidConfig"),
-						severity: .error
-					)
-				)
-			)
-		} else if confKeyPath.count > 1 && container.description == "ConfKeys" {
-			context.diagnose(
-				Diagnostic(
-					node: Syntax(confKeyPathArg),
-					message: SimpleDiagnosticMessage(
-						message: "The conf path only contain more than one elements but the conf keys container is ConfKeys. This is highly unlikely and probably an error.",
-						diagnosticID: MessageID(domain: "Configuration", id: "InvalidConfig"),
-						severity: .warning
-					)
-				)
-			)
-		}
-		return [#"""
-			extension \#(raw: container) {
-			    \#(raw: actor.flatMap{ "@\($0) " } ?? "")public struct \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
-			        public typealias Value = \#(raw: confType)
-			        public \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValueArg.expression)
-			    }
-			    public var \#(raw: confKeyPath.last!): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}
-			}
-			"""#
-		] + (declareConvenienceAccessor ? [#"""
-			extension Conf {
-			    internal var \#(raw: confKeyPath.last!): \#(raw: confType) {Conf[\ConfKeys.\#(raw: confKeyPath.joined(separator: "."))]}
-			}
-			"""#
-		] : [])
+		let confKeyName = try optionalStaticString(from: confKeyNameArg, argname: "customConfKeyName") ?? "ConfKey_\(confKey)"
+		return [
+			#"""
+				public struct \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
+					public typealias Value = \#(raw: confType)
+					public \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValueArg.expression)
+				}
+				"""#,
+			#"""
+				public var \#(raw: confKey): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}
+				"""#
+		]
 	}
 	
 	private static func staticString(from expr: LabeledExprSyntax, argname: String) throws -> String {
