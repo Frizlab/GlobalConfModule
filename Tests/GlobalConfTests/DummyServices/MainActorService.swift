@@ -21,10 +21,5 @@ extension MainActorService : AutoInjectableMainActor
 
 extension ConfKeys {
 	var mainActorService:  MainActorService.AutoInjectionKey.Type {MainActorService.AutoInjectionKey.self}
-	var mainActorService2: OtherConfKey                     .Type {OtherConfKey                     .self}
-}
-
-public struct OtherConfKey : ConfKeyMainActor {
-	public typealias Value = MainActorService
-	public static let defaultValue: Value! = .init()
+	#declareConfKey("mainActorService2", MainActorService.self, on: MainActor.self, defaultValue: .init())
 }

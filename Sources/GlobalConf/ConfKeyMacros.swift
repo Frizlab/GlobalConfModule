@@ -9,7 +9,18 @@ import Foundation
 public macro declareConfKey<T>(
 	_ confKey: String?,
 	_ confType: T.Type,
-	on globalActor: (any GlobalActor).Type? = nil,
+	unsafeNonIsolated: Bool = false,
+	in confContainer: Any.Type = ConfKeys.self,
+	_ customConfKeyName: String? = nil,
+	defaultValue: T
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
+
+/* Same as previous, but with a global actor. */
+@freestanding(declaration, names: arbitrary)
+public macro declareConfKey<T, A : GlobalActor>(
+	_ confKey: String?,
+	_ confType: T.Type,
+	on globalActor: A.Type,
 	unsafeNonIsolated: Bool = false,
 	in confContainer: Any.Type = ConfKeys.self,
 	_ customConfKeyName: String? = nil,
@@ -21,7 +32,18 @@ public macro declareConfKey<T>(
 public macro declareServiceKey<T>(
 	_ confKey: String?,
 	_ confType: T.Type,
-	on globalActor: (any GlobalActor).Type? = nil,
+	unsafeNonIsolated: Bool = false,
+	in confContainer: Any.Type = ConfKeys.self,
+	_ customConfKeyName: String? = nil,
+	defaultValue: T!
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
+
+/* Same as previous, but with a global actor. */
+@freestanding(declaration, names: arbitrary)
+public macro declareServiceKey<T, A : GlobalActor>(
+	_ confKey: String?,
+	_ confType: T.Type,
+	on globalActor: A.Type,
 	unsafeNonIsolated: Bool = false,
 	in confContainer: Any.Type = ConfKeys.self,
 	_ customConfKeyName: String? = nil,
@@ -33,7 +55,18 @@ public macro declareServiceKey<T>(
 public macro declareServiceFactoryKey<T>(
 	_ confKey: String?,
 	_ confType: T.Type,
-	on globalActor: (any GlobalActor).Type? = nil,
+	unsafeNonIsolated: Bool = false,
+	in confContainer: Any.Type = ConfKeys.self,
+	_ customConfKeyName: String? = nil,
+	defaultValue: (@Sendable () -> T)!
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
+
+/* Same as previous, but with a global actor. */
+@freestanding(declaration, names: arbitrary)
+public macro declareServiceFactoryKey<T, A : GlobalActor>(
+	_ confKey: String?,
+	_ confType: T.Type,
+	on globalActor: A.Type,
 	unsafeNonIsolated: Bool = false,
 	in confContainer: Any.Type = ConfKeys.self,
 	_ customConfKeyName: String? = nil,

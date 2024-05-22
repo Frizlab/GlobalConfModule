@@ -102,6 +102,13 @@ Note services that are protocols cannot be auto-injectable.
 == `@MainActor` or Other Isolated Services
 
 For `@MainActor` services you must use the `ConfKeyMainActor` and `AutoInjectableMainActor` protocols instead of their non-`MainActor` equivalents.
+The macro have an argument to pass the global actor to use to declare the conf or service:
+[source,swift]
+----
+extension ConfKeys {
+   #declareConfKey("myConf", Int.self, on: MainActor.self, defaultValue: 42)
+}
+----
 
 For services isolated on other global (or non-global) actors you’ll have to do a little bit more boilerplate.
 
