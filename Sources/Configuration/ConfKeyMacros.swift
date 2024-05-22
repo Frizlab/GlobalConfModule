@@ -42,7 +42,7 @@ public macro declareServiceFactoryKey<T>(
 
 /* Same as declareServiceKey, but the value is a factory. */
 @freestanding(declaration, names: arbitrary)
-public macro declareKeyNameSpace<T>(
+public macro declareKeyNameSpace(
 	_ accessorName: String,
 	_ namespaceKeyName: String? = nil
 ) = #externalMacro(module: "ConfigurationMacros", type: "DeclareConfNamespaceMacro")
