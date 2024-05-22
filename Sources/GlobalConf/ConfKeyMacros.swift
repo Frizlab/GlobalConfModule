@@ -7,7 +7,7 @@ import Foundation
 
 @freestanding(declaration, names: arbitrary)
 public macro declareConfKey<T>(
-	_ confKey: String,
+	_ confKey: String?,
 	_ confType: T.Type,
 	on globalActor: (any GlobalActor).Type? = nil,
 	unsafeNonIsolated: Bool = false,
@@ -19,7 +19,7 @@ public macro declareConfKey<T>(
 /* Same as declareConfKey, but the default value can be `nil`. */
 @freestanding(declaration, names: arbitrary)
 public macro declareServiceKey<T>(
-	_ confKey: String,
+	_ confKey: String?,
 	_ confType: T.Type,
 	on globalActor: (any GlobalActor).Type? = nil,
 	unsafeNonIsolated: Bool = false,
@@ -31,7 +31,7 @@ public macro declareServiceKey<T>(
 /* Same as declareServiceKey, but the value is a factory. */
 @freestanding(declaration, names: arbitrary)
 public macro declareServiceFactoryKey<T>(
-	_ confKey: String,
+	_ confKey: String?,
 	_ confType: T.Type,
 	on globalActor: (any GlobalActor).Type? = nil,
 	unsafeNonIsolated: Bool = false,

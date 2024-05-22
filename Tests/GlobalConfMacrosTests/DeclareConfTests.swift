@@ -153,4 +153,50 @@ final class DeclareConfTests : XCTestCase {
 #endif
 	}
 	
+	func testUsageWithoutConfKey() throws {
+#if canImport(GlobalConfMacros)
+		/* Note I’m not sure the generated name is stable… */
+		assertMacroExpansion("""
+				extension ConfKeys {
+					#declareServiceKey(nil, MyService.self, "MyServiceConfKey", defaultValue: .init())
+				}
+				""",
+			expandedSource: #"""
+				extension ConfKeys {
+					public enum MyServiceConfKey : ConfKey {
+						public typealias Value = MyService
+						public static let defaultValue: MyService! = .init()
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
+	func testUsageWithoutConfKeyOrType() throws {
+#if canImport(GlobalConfMacros)
+		/* Note I’m not sure the generated name is stable… */
+		assertMacroExpansion("""
+				extension ConfKeys {
+					#declareServiceKey(nil, MyService.self, defaultValue: .init())
+				}
+				""",
+			expandedSource: #"""
+				extension ConfKeys {
+					public enum __macro_local_7ConfKeyfMu_ : ConfKey {
+						public typealias Value = MyService
+						public static let defaultValue: MyService! = .init()
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
 }

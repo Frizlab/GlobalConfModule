@@ -110,11 +110,11 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		macroName: MacroName,
 		in context: some MacroExpansionContext
 	) throws -> [DeclSyntax] {
-		let confKey      = try confKeyArg    .extractStaticString        (argname: "confKey")
+		let confKey      = try confKeyArg    .extractOptionalStaticString(argname: "confKey")
 		let confBaseType = try confTypeArg   .extractSwiftType           (argname: "confType")
 		let actor        = try actorArg      .extractOptionalSwiftType   (argname: "globalActor")
 		let nonIsolated  = try nonIsolatedArg.extractBool                (argname: "unsafeNonIsolated")
-		let confKeyName  = try confKeyNameArg.extractOptionalStaticString(argname: "customConfKeyName") ?? "ConfKey_\(confKey)"
+		let confKeyName  = try confKeyNameArg.extractOptionalStaticString(argname: "customConfKeyName") ?? confKey.flatMap{ "ConfKey_\($0)" } ?? context.makeUniqueName("ConfKey").text
 		let confType: ExprSyntax
 		let defaultValue: ExprSyntax
 		switch macroName {
@@ -129,10 +129,8 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 					public \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValue)
 				}
 				"""#,
-			#"""
-				public var \#(raw: confKey): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}
-				"""#
-		]
+			confKey.flatMap{ #"public var \#(raw: $0): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}"# },
+		].compactMap{ $0 }
 	}
 	
 }
