@@ -35,7 +35,7 @@ final class DeclareConfTests : XCTestCase {
 				extension ConfKeys {
 					public struct MyBoolConfKey : ConfKey {
 						public typealias Value = Bool
-						public static let defaultValue: Bool! = true
+						public static let defaultValue: Bool! = .some(true)
 					}
 					public var myBool: MyBoolConfKey.Type {
 					    MyBoolConfKey.self
@@ -62,7 +62,7 @@ final class DeclareConfTests : XCTestCase {
 				extension ConfKeys.MyLib {
 					public struct ConfKey_myBool : ConfKeyMainActor {
 						public typealias Value = Bool
-						public static let defaultValue: Bool! = true
+						public static let defaultValue: Bool! = .some(true)
 					}
 					public var myBool: ConfKey_myBool.Type {
 					    ConfKey_myBool.self
@@ -87,7 +87,34 @@ final class DeclareConfTests : XCTestCase {
 				extension ConfKeys {
 					public struct ConfKey_oslog : ConfKey {
 						public typealias Value = OSLog?
-						public nonisolated (unsafe) static let defaultValue: OSLog?! = .default
+						public nonisolated (unsafe) static let defaultValue: OSLog?! = .some(.default)
+					}
+					public var oslog: ConfKey_oslog.Type {
+					    ConfKey_oslog.self
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
+	func testBasicFactoryUsage() throws {
+#if canImport(ConfigurationMacros)
+		assertMacroExpansion("""
+				extension ConfKeys {
+					#declareServiceFactoryKey("oslog", OSLog?.self, unsafeNonIsolated: true, defaultValue: { .default })
+				}
+				""",
+			expandedSource: #"""
+				extension ConfKeys {
+					public struct ConfKey_oslog : ConfKey {
+						public typealias Value = (@Sendable () -> OSLog?)
+						public nonisolated (unsafe) static let defaultValue: (@Sendable () -> OSLog?)! = {
+						    .default
+						}
 					}
 					public var oslog: ConfKey_oslog.Type {
 					    ConfKey_oslog.self
@@ -105,7 +132,7 @@ final class DeclareConfTests : XCTestCase {
 #if canImport(ConfigurationMacros)
 		assertMacroExpansion("""
 				extension ConfKeys {
-					#declareConfKey("oslog", OSLog?   .self, unsafeNonIsolated: true, defaultValue: .default)
+					#declareServiceKey("oslog", OSLog?   .self, unsafeNonIsolated: true, defaultValue: .default)
 				}
 				""",
 			expandedSource: #"""

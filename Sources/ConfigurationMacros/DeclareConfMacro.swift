@@ -10,6 +10,14 @@ import UnwrapOrThrow
 
 public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 	
+	public enum MacroName : String {
+		
+		case declareConfKey
+		case declareServiceKey
+		case declareServiceFactoryKey
+		
+	}
+	
 	/* Example of use:
 	 *   #conf("OSLog", OSLog?.self, unsafeNonIsolated: true, ConfKeys.self, ["urlRequestOperation", "oslog"], .default)
 	 *   /* The unsafeNonIsolated and conf key container (here `ConfKeys.self`) parameters are optional. */
@@ -20,8 +28,8 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 	 *   - The path to the conf key to create;
 	 *   - The default value for the configuration. */
 	public static func expansion(of node: some FreestandingMacroExpansionSyntax, in context: some MacroExpansionContext) throws -> [DeclSyntax] {
-		if node.macroName.text == "declareServiceFactory" {
-			throw Err.internalError(message: "Not Implemented")
+		guard let macroName = MacroName(rawValue: node.macroName.text) else {
+			throw Err.internalError(message: "Unknown macro name")
 		}
 		
 		var args = Array(node.arguments.reversed())
@@ -67,7 +75,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		}
 		
 		guard args.isEmpty else {
-			throw Err.invalidSyntax(message: "too many arguments to the macro")
+			throw Err.invalidSyntax(message: "Too many arguments to the macro")
 		}
 		
 		return try expansionFor(
@@ -77,6 +85,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 			nonIsolatedArg: nonIsolatedArg,
 			confKeyNameArg: confKeyNameArg,
 			defaultValueArg: defaultValueArg,
+			macroName: macroName,
 			in: context
 		)
 	}
@@ -88,18 +97,26 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		nonIsolatedArg: LabeledExprSyntax,
 		confKeyNameArg: LabeledExprSyntax,
 		defaultValueArg: LabeledExprSyntax,
+		macroName: MacroName,
 		in context: some MacroExpansionContext
 	) throws -> [DeclSyntax] {
-		let confKey     = try staticString        (from: confKeyArg,     argname: "confKey")
-		let confType    = try swiftType           (from: confTypeArg,    argname: "confType")
-		let actor       = try optionalSwiftType   (from: actorArg,       argname: "globalActor")
-		let nonIsolated = try bool                (from: nonIsolatedArg, argname: "unsafeNonIsolated")
-		let confKeyName = try optionalStaticString(from: confKeyNameArg, argname: "customConfKeyName") ?? "ConfKey_\(confKey)"
+		let confKey      = try staticString        (from: confKeyArg,     argname: "confKey")
+		let confBaseType = try swiftType           (from: confTypeArg,    argname: "confType")
+		let actor        = try optionalSwiftType   (from: actorArg,       argname: "globalActor")
+		let nonIsolated  = try bool                (from: nonIsolatedArg, argname: "unsafeNonIsolated")
+		let confKeyName  = try optionalStaticString(from: confKeyNameArg, argname: "customConfKeyName") ?? "ConfKey_\(confKey)"
+		let confType: ExprSyntax
+		let defaultValue: ExprSyntax
+		switch macroName {
+			case .declareConfKey:           defaultValue = ".some(\(raw: defaultValueArg.expression))"; confType = confBaseType
+			case .declareServiceKey:        defaultValue = defaultValueArg.expression;                  confType = confBaseType
+			case .declareServiceFactoryKey: defaultValue = defaultValueArg.expression;                  confType = "(@Sendable () -> \(raw: confBaseType))"
+		}
 		return [
 			#"""
 				public struct \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
 					public typealias Value = \#(raw: confType)
-					public \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValueArg.expression)
+					public \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValue)
 				}
 				"""#,
 			#"""
