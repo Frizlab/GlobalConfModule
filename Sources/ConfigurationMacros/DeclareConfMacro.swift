@@ -28,11 +28,21 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 	 *   - The path to the conf key to create;
 	 *   - The default value for the configuration. */
 	public static func expansion(of node: some FreestandingMacroExpansionSyntax, in context: some MacroExpansionContext) throws -> [DeclSyntax] {
+#if canImport(SwiftSyntax509)
+		guard let macroName = MacroName(rawValue: node.macro.text) else {
+			throw Err.internalError(message: "Unknown macro name")
+		}
+#else
 		guard let macroName = MacroName(rawValue: node.macroName.text) else {
 			throw Err.internalError(message: "Unknown macro name")
 		}
+#endif
 		
+#if canImport(SwiftSyntax509)
+		var args = Array(node.argumentList.reversed())
+#else
 		var args = Array(node.arguments.reversed())
+#endif
 		/* Get confKey. */
 		let confKeyArg = try args.popLast() ?! Err.missingArgument(argname: "confKey")
 		guard confKeyArg.label == nil else {

@@ -21,6 +21,7 @@ let package = Package(
 		.package(url: "https://github.com/apple/swift-service-context.git", from: "1.0.0"),
 		/* TODO: CI should test the package w/ all of the major versions we support of swift-syntax specified explicitly. */
 		.package(url: "https://github.com/apple/swift-syntax.git",          "509.0.0"..<"511.0.0"),
+//		.package(url: "https://github.com/apple/swift-syntax.git",          from: "509.0.0"),
 		.package(url: "https://github.com/Frizlab/SafeGlobal.git",          from: "0.2.0"),
 		.package(url: "https://github.com/Frizlab/UnwrapOrThrow.git",       from: "1.0.1"),
 	],

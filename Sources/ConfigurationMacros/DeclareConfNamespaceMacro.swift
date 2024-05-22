@@ -11,7 +11,11 @@ import UnwrapOrThrow
 public struct DeclareConfNamespaceMacro : DeclarationMacro, FreestandingMacro {
 	
 	public static func expansion(of node: some FreestandingMacroExpansionSyntax, in context: some MacroExpansionContext) throws -> [DeclSyntax] {
+#if canImport(SwiftSyntax509)
+		var args = Array(node.argumentList.reversed())
+#else
 		var args = Array(node.arguments.reversed())
+#endif
 		/* Get accessorName. */
 		let accessorNameArg = try args.popLast() ?! Err.missingArgument(argname: "accessorName")
 		guard accessorNameArg.label == nil else {
