@@ -11,9 +11,9 @@ final class UsageTests : XCTestCase {
 	func testUsingNoActorService() {
 		noActorService.printHello()
 		noActorServiceFromKeyPath.printHello()
-		Injected<NoActorService>.value.printHello()
-		XCTAssertTrue(noActorService === Injected<NoActorService>.value)
-		XCTAssertTrue(noActorServiceFromKeyPath === Injected<NoActorService>.value)
+		InjectedConf<NoActorService>.value.printHello()
+		XCTAssertTrue(noActorService === InjectedConf<NoActorService>.value)
+		XCTAssertTrue(noActorServiceFromKeyPath === InjectedConf<NoActorService>.value)
 	}
 	
 	func testUsingNoActorServiceWithFactory() {
@@ -21,11 +21,11 @@ final class UsageTests : XCTestCase {
 		XCTAssertTrue(noActorFactoryService !== noActorFactoryService)
 	}
 	
-	@Injected()
+	@InjectedConf()
 	var noActorService: NoActorService
-	@Injected(\.noActorService)
+	@InjectedConf(\.noActorService)
 	var noActorServiceFromKeyPath: NoActorService
-	@Injected(\.noActorFactoryService)
+	@InjectedConf(\.noActorFactoryService)
 	var noActorFactoryService: NoActorService
 	
 }

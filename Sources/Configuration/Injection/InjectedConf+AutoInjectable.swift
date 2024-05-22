@@ -4,7 +4,7 @@ import ServiceContextModule
 
 
 
-public extension Injected where InjectedType : AutoInjectable {
+public extension InjectedConf where InjectedType : AutoInjectable {
 	
 	init(customContext: ConfContext? = nil) {
 		let defaultValue = InjectedType.AutoInjectionKey.defaultValue
@@ -15,7 +15,7 @@ public extension Injected where InjectedType : AutoInjectable {
 }
 
 
-public extension Injected where InjectedType : AutoInjectable {
+public extension InjectedConf where InjectedType : AutoInjectable {
 	
 	@inlinable
 	static var value: InjectedType {
@@ -36,7 +36,7 @@ public extension Injected where InjectedType : AutoInjectable {
 }
 
 
-public extension Injected where InjectedType : AutoInjectable {
+public extension InjectedConf where InjectedType : AutoInjectable {
 	
 	@inlinable
 	static var rootValue: InjectedType {

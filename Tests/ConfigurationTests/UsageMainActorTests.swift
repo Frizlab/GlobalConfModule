@@ -14,52 +14,52 @@ final class UsageMainActorTests : XCTestCase {
 		let c = MainActorContainer()
 		c.mainActorService.printHello()
 		c.mainActorServiceFromKeyPath.printHello()
-		Injected<MainActorService>.value.printHello()
+		InjectedConf<MainActorService>.value.printHello()
 		XCTAssertTrue(c.mainActorService === Conf[\.mainActorService])
 		XCTAssertTrue(c.mainActorService === Conf[key: MainActorService.AutoInjectionKey.self])
 		XCTAssertTrue(c.mainActorService === Conf.rootValue(for: MainActorService.AutoInjectionKey.self))
-		XCTAssertTrue(c.mainActorService === Injected<MainActorService>.value)
-		XCTAssertTrue(c.mainActorServiceFromKeyPath === Injected<MainActorService>.value)
+		XCTAssertTrue(c.mainActorService === InjectedConf<MainActorService>.value)
+		XCTAssertTrue(c.mainActorServiceFromKeyPath === InjectedConf<MainActorService>.value)
 		
-		XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
+		XCTAssertTrue(c.otherMainActorService !== InjectedConf<MainActorService>.value)
 		
 		let oldOtherActor = c.otherMainActorService
 		Conf.setRootValue(c.mainActorService, for: \.mainActorService2)
-		XCTAssertTrue(c.otherMainActorService === Injected<MainActorService>.value)
+		XCTAssertTrue(c.otherMainActorService === InjectedConf<MainActorService>.value)
 		
 		Conf.withValue(oldOtherActor, for: \.mainActorService2, operation: {
 			XCTAssertTrue(c.mainActorService === Conf[\.mainActorService])
 			XCTAssertTrue(c.otherMainActorService === oldOtherActor)
-			XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
+			XCTAssertTrue(c.otherMainActorService !== InjectedConf<MainActorService>.value)
 		})
 		
 		Conf.withValues{
 			$0[\.mainActorService2] = MainActorService()
 		}operation:{
 			XCTAssertTrue(c.otherMainActorService !== oldOtherActor)
-			XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
+			XCTAssertTrue(c.otherMainActorService !== InjectedConf<MainActorService>.value)
 		}
 		
-		Injected<MainActorService>.withValue(MainActorService()){
+		InjectedConf<MainActorService>.withValue(MainActorService()){
 			XCTAssertTrue(c.otherMainActorService !== oldOtherActor)
-			XCTAssertTrue(c.otherMainActorService !== Injected<MainActorService>.value)
+			XCTAssertTrue(c.otherMainActorService !== InjectedConf<MainActorService>.value)
 		}
 		
-		XCTAssertTrue(c.otherMainActorService === Injected<MainActorService>.value)
+		XCTAssertTrue(c.otherMainActorService === InjectedConf<MainActorService>.value)
 		
-		Injected<MainActorService>.rootValue = oldOtherActor
+		InjectedConf<MainActorService>.rootValue = oldOtherActor
 		XCTAssertTrue(c.otherMainActorService !== c.mainActorService)
 	}
 	
 	@MainActor
 	struct MainActorContainer {
 		
-		@Injected()
+		@InjectedConf()
 		var mainActorService: MainActorService
-		@Injected(\.mainActorService)
+		@InjectedConf(\.mainActorService)
 		var mainActorServiceFromKeyPath: MainActorService
 		
-		@Injected(\.mainActorService2)
+		@InjectedConf(\.mainActorService2)
 		var otherMainActorService: MainActorService
 		
 	}

@@ -15,7 +15,7 @@ final class DocTests : XCTestCase {
 		XCTAssertTrue(true)
 	}
 	
-	@Injected(\.docService)
+	@InjectedConf(\.docService)
 	var docService: DocService
 	
 	func testConfUsage() {
@@ -27,7 +27,7 @@ final class DocTests : XCTestCase {
 		XCTAssertNotNil(docAutoInjectedService)
 	}
 	
-	@Injected()
+	@InjectedConf()
 	var docAutoInjectedService: DocAutoInjectedService
 
 }
