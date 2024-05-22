@@ -1,6 +1,6 @@
 import Foundation
 
-import DependencyInjection
+import GlobalConfModule
 
 
 
@@ -14,17 +14,17 @@ public final class MainActorService : Sendable {
 
 
 extension MainActorService : AutoInjectableMainActor
-{@MainActor public struct AutoInjectionKey : InjectionKeyMainActor {
+{@MainActor public struct AutoInjectionKey : ConfKeyMainActor {
 	public typealias Value = MainActorService
 	public static let defaultValue: Value! = .init()
 }}
 
-extension InjectionKeys {
-	var mainActorService: MainActorService.AutoInjectionKey.Type {MainActorService.AutoInjectionKey.self}
-	var mainActorService2: OtherInjectionKey.Type {OtherInjectionKey.self}
+extension ConfKeys {
+	var mainActorService:  MainActorService.AutoInjectionKey.Type {MainActorService.AutoInjectionKey.self}
+	var mainActorService2: OtherConfKey                     .Type {OtherConfKey                     .self}
 }
 
-public struct OtherInjectionKey : InjectionKeyMainActor {
+public struct OtherConfKey : ConfKeyMainActor {
 	public typealias Value = MainActorService
 	public static let defaultValue: Value! = .init()
 }

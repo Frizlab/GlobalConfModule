@@ -1,38 +1,43 @@
-= DependencyInjection
+= Global Conf Module for Swift
 François Lamboley <fload@me.com>
 
-A fully concurrency-ready dependency injection solution for Swift, loosely inspired by https://www.avanderlee.com/swift/dependency-injection/.
+A fully concurrency-ready generic configuration and dependency injection solution for Swift,
+ loosely inspired by <https://www.avanderlee.com/swift/dependency-injection/>.
 
-== Basic Usage
+== Basic Usage (Dependency Injection)
 
-Defining the service:
+Declaring a service:
 [source,swift]
 ----
-public protocol MyService { ... }
+public protocol MyService : Sendable { ... }
 public final class DefaultMyService : MyService { ... }
 
-public struct MyServiceInjectionKey : InjectionKey {
-   public typealias Value = MyService
-   /* If no default value make sense, you can set `nil` here.
-    * Be aware the app _will_ crash if the dependency is accessed before the value is set! */
-   public static let defaultValue: Value! = DefaultMyService()
+extension ConfKeys {
+   #declareServiceKey("myService", MyService.self, defaultValue: DefaultMyService())
 }
-public extension InjectionKeys {
-   var myService: MyServiceInjectionKey.Type {MyServiceInjectionKey.self}
+/* You can have as many injected instances of your service as you want by declaring more keys for it. */
+----
+
+Declaring a service which is instantiated via a factory:
+[source,swift]
+----
+extension ConfKeys {
+   #declareServiceFactoryKey("myServiceFactory", MyService.self, defaultValue: { DefaultMyService() })
 }
-/* You can have as many injected instances of your service as you want by
- *  adding more injection keys and variables in the `InjectionKeys` “namespace”. */
 ----
 
 Using it:
 [source,swift]
 ----
 struct ServiceClient {
-   @Injected(\.myService)
-   var myService: MyService
+   @InjectedConf(\.myService) var myService: MyService
+   @InjectedConf(\.myServiceFactory) var myServiceViaFactory: MyService
    
    func myFunction() {
+      /* The myService variable will always be up-to-date. */
       myService.doAmazingStuff(...)
+      /* Using the default definition set above for myServiceFactory, myServiceViaFactory will always be a new instance. */
+      myServiceViaFactory.doAmazingStuff(...)
    }
 }
 ----
@@ -41,13 +46,31 @@ Changing the injected instance:
 [source,swift]
 ----
 func myAppInit() {
-   Injected.setValue(newService, for: \.myService)
+   Conf.setRootValue(newService, for: \.myService)
+}
+----
+
+== Basic Usage (Framework Configuration)
+
+[source,swift]
+----
+/* Declare the configuration key. */
+extension ConfKeys {
+   #declareConfKey("myConf", Int.self, defaultValue: 42)
+}
+
+/* Use it in your code. */
+if Conf[\.myConf] == 42 {...}
+
+/* Optionally you can define an internal convenience on Conf for easier access. */
+internal extension Conf {
+   static var myConf: Int {Conf[\.myConf]}
 }
 ----
 
 == Auto-Injected Services
 
-An auto-injected service is a service that can be `@Injected` w/o specifying a keypath in the property wrapper init.
+An auto-injected service is a service that can be `@InjectedConf` w/o specifying a keypath in the property wrapper init. +
 This is useful in case there is a “main” instance of your service and specifying a key-path each time the service variable is defined would be redundant.
 
 For these services you can use the `AutoInjectable` protocol:
@@ -55,11 +78,11 @@ For these services you can use the `AutoInjectable` protocol:
 ----
 public final class MyService { ... }
 
+extension ConfKeys {
+   #declareServiceKey("myService"/* or nil if you don’t need the ConfKeys keypath */, MyService.self, "MyServiceKey", defaultValue: DefaultMyService())
+}
 extension MyService : AutoInjectable {
-   public struct AutoInjectionKey : InjectionKey {
-      public typealias Value = MyService
-      public static let defaultValue: Value! = .init()
-   }
+   public typealias AutoInjectionKey = ConfKeys.MyServiceKey
 }
 ----
 
@@ -68,7 +91,7 @@ And getting the service instance can now be done like so:
 [source,swift]
 ----
 struct ServiceClient {
-   @Injected()
+   @InjectedConf()
    var myService: MyService
    ...
 }
@@ -78,23 +101,18 @@ Note services that are protocols cannot be auto-injectable.
 
 == `@MainActor` or Other Isolated Services
 
-For `@MainActor` services you must use the `InjectionKeyMainActor` and `AutoInjectableMainActor` protocols instead of their non-`MainActor` equivalents.
+For `@MainActor` services you must use the `ConfKeyMainActor` and `AutoInjectableMainActor` protocols instead of their non-`MainActor` equivalents.
 
 For services isolated on other global (or non-global) actors you’ll have to do a little bit more boilerplate.
 
-:injection-key: link:./Sources/InjectionKeyMainActor.swift[InjectionKeyMainActor.swift]
-:auto-injectable: link:./Sources/AutoInjectableMainActor.swift[AutoInjectableMainActor.swift]
-
 === For Global Actors
-Basically you will need copy the {injection-key} file and replace the `MainActor` instances by your own global actor.
-
-Optionally, you can also copy and adapt the {auto-injectable} file if you need auto-injection.
+Basically you will need copy all the `*MainActor` files and replace the `MainActor` instances by your own global actor.
 
 === For Non-Global Actors
 This is probably a very advance use-case.
 If you need that, ask yourself why and see if you really do.
 
-Like for global actors you will need to copy and adapt the {injection-key} and {auto-injectable} files.
+Like for global actors you will need to copy and adapt the `*MainActor` files.
 
 I have not tried it, but most likely you will have to remove the global actor annotations and add the `isolated` parameter you need in the different methods in the files.
 
@@ -105,7 +123,7 @@ In the very rare case where you need control on when the service is initialized 
 [source,swift]
 ----
 struct ServiceClient {
-   @Injected
+   @InjectedConf
    var myService: MyService
    
    init() {

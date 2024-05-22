@@ -6,6 +6,6 @@ import ServiceContextModule
 
 public protocol AutoInjectableMainActor : Sendable {
 	
-	associatedtype AutoInjectionKey : InjectionKeyMainActor where AutoInjectionKey.Value == Self
+	associatedtype AutoInjectionKey : ConfKeyMainActor where AutoInjectionKey.Value == Self
 	
 }
