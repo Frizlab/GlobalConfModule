@@ -13,18 +13,21 @@ import SwiftSyntaxMacrosTestSupport
 import ConfigurationMacros
 
 let testMacros: [String: Macro.Type] = [
-	"conf": ConfKeyMacro.self,
+	"declareConf": DeclareConfMacro.self,
+	"declareConfOnly": DeclareConfMacro.self,
+	"declareService": DeclareConfMacro.self,
+	"declareServiceFactory": DeclareConfMacro.self,
 ]
 #endif
 
 
-final class ConfigurationMacrosTests : XCTestCase {
+final class DeclareConfTests : XCTestCase {
 	
 	func testBasicUsage() throws {
 #if canImport(ConfigurationMacros)
 		assertMacroExpansion("""
 				import Configuration
-				#conf("myBool", Bool.self, "MyBool", true)
+				#declareConfOnly("myBool", Bool.self, "MyBoolConfKey", defaultValue: true)
 				""",
 			expandedSource: #"""
 				import Configuration
@@ -37,9 +40,34 @@ final class ConfigurationMacrosTests : XCTestCase {
 				        MyBoolConfKey.self
 				    }
 				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
+	func testBasicUsageNonStandardContainer() throws {
+#if canImport(ConfigurationMacros)
+		assertMacroExpansion("""
+				import Configuration
+				#declareConf("myLib.myBool", Bool.self, in: ConfKeys.MyLib.self, defaultValue: true)
+				""",
+			expandedSource: #"""
+				import Configuration
+				extension ConfKeys.MyLib {
+				    public struct ConfKey_myBool : ConfKey {
+				        public typealias Value = Bool
+				        public static let defaultValue: Bool! = true
+				    }
+				    public var myBool: ConfKey_myBool.Type {
+				        ConfKey_myBool.self
+				    }
+				}
 				extension Conf {
 				    internal var myBool: Bool {
-				        Conf[\ConfKeys.myBool]
+				        Conf[\ConfKeys.myLib.myBool]
 				    }
 				}
 				"""#,
@@ -53,16 +81,16 @@ final class ConfigurationMacrosTests : XCTestCase {
 	func testBasicUsageNonIsolated() throws {
 #if canImport(ConfigurationMacros)
 		assertMacroExpansion("""
-				#conf("OSLog", OSLog?.self, unsafeNonIsolated: true, ["oslog"], .default)
+				#declareConf("oslog", OSLog?.self, unsafeNonIsolated: true, defaultValue: .default)
 				""",
 			expandedSource: #"""
 				extension ConfKeys {
-				    public struct OSLogConfKey : ConfKey {
+				    public struct ConfKey_oslog : ConfKey {
 				        public typealias Value = OSLog?
 				        public nonisolated (unsafe) static let defaultValue: OSLog?! = .default
 				    }
-				    public var oslog: OSLogConfKey.Type {
-				        OSLogConfKey.self
+				    public var oslog: ConfKey_oslog.Type {
+				        ConfKey_oslog.self
 				    }
 				}
 				extension Conf {

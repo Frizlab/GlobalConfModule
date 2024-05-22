@@ -9,7 +9,7 @@ import SwiftSyntaxMacros
 struct ConfigurationMacrosPlugin : CompilerPlugin {
 	
 	let providingMacros: [Macro.Type] = [
-		ConfKeyMacro.self,
+		DeclareConfMacro.self,
 	]
 	
 }
