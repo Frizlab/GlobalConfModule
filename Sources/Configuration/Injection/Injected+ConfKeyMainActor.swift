@@ -4,20 +4,21 @@ import ServiceContextModule
 
 
 
+@MainActor
 public extension Injected {
 	
-	@MainActor
-	init<InjectedKey : ConfKeyMainActor>(_ keyPath: KeyPath<ConfKeys, InjectedKey.Type>)
+	init<InjectedKey : ConfKeyMainActor>(_ keyPath: KeyPath<ConfKeys, InjectedKey.Type>, customContext: ConfContext? = nil)
 	where InjectedKey.Value == InjectedType {
 		let defaultValue = InjectedKey.defaultValue
-		self.erasedAccessor = { Conf.currentContext[InjectedKey.self] ?? defaultValue! }
+		if let customContext {self.erasedAccessor = { customContext.actualContext[InjectedKey.self] ?? defaultValue! }}
+		else                 {self.erasedAccessor = {         Conf.currentContext[InjectedKey.self] ?? defaultValue! }}
 	}
 	
-	@MainActor
-	init<InjectedKey : ConfKeyMainActor>(_ keyPath: KeyPath<ConfKeys, InjectedKey.Type>)
+	init<InjectedKey : ConfKeyMainActor>(_ keyPath: KeyPath<ConfKeys, InjectedKey.Type>, customContext: ConfContext? = nil)
 	where InjectedKey.Value == @Sendable () -> InjectedType {
 		let defaultValue = InjectedKey.defaultValue
-		self.erasedAccessor = { Conf.currentContext[InjectedKey.self]?() ?? defaultValue!() }
+		if let customContext {self.erasedAccessor = { customContext.actualContext[InjectedKey.self]?() ?? defaultValue!() }}
+		else                 {self.erasedAccessor = {         Conf.currentContext[InjectedKey.self]?() ?? defaultValue!() }}
 	}
 	
 }
