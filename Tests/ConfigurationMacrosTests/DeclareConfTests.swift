@@ -12,7 +12,7 @@ import SwiftSyntaxMacrosTestSupport
 #if canImport(ConfigurationMacros)
 import ConfigurationMacros
 
-let testMacros: [String: Macro.Type] = [
+private let testMacros: [String: Macro.Type] = [
 	"declareConfKey": DeclareConfMacro.self,
 	"declareServiceKey": DeclareConfMacro.self,
 	"declareServiceFactoryKey": DeclareConfMacro.self,

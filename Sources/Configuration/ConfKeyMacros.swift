@@ -39,3 +39,10 @@ public macro declareServiceFactoryKey<T>(
 	_ customConfKeyName: String? = nil,
 	defaultValue: (@Sendable () -> T)!
 ) = #externalMacro(module: "ConfigurationMacros", type: "DeclareConfMacro")
+
+/* Same as declareServiceKey, but the value is a factory. */
+@freestanding(declaration, names: arbitrary)
+public macro declareKeyNameSpace<T>(
+	_ accessorName: String,
+	_ namespaceKeyName: String? = nil
+) = #externalMacro(module: "ConfigurationMacros", type: "DeclareConfNamespaceMacro")

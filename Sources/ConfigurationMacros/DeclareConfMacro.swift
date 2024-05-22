@@ -100,11 +100,11 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		macroName: MacroName,
 		in context: some MacroExpansionContext
 	) throws -> [DeclSyntax] {
-		let confKey      = try staticString        (from: confKeyArg,     argname: "confKey")
-		let confBaseType = try swiftType           (from: confTypeArg,    argname: "confType")
-		let actor        = try optionalSwiftType   (from: actorArg,       argname: "globalActor")
-		let nonIsolated  = try bool                (from: nonIsolatedArg, argname: "unsafeNonIsolated")
-		let confKeyName  = try optionalStaticString(from: confKeyNameArg, argname: "customConfKeyName") ?? "ConfKey_\(confKey)"
+		let confKey      = try confKeyArg    .extractStaticString        (argname: "confKey")
+		let confBaseType = try confTypeArg   .extractSwiftType           (argname: "confType")
+		let actor        = try actorArg      .extractOptionalSwiftType   (argname: "globalActor")
+		let nonIsolated  = try nonIsolatedArg.extractBool                (argname: "unsafeNonIsolated")
+		let confKeyName  = try confKeyNameArg.extractOptionalStaticString(argname: "customConfKeyName") ?? "ConfKey_\(confKey)"
 		let confType: ExprSyntax
 		let defaultValue: ExprSyntax
 		switch macroName {
@@ -123,70 +123,6 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 				public var \#(raw: confKey): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}
 				"""#
 		]
-	}
-	
-	private static func staticString(from expr: LabeledExprSyntax, argname: String) throws -> String {
-		guard let segments = expr.expression.as(StringLiteralExprSyntax.self)?.segments,
-				segments.count == 1,
-				case .stringSegment(let literalSegment)? = segments.first
-		else {
-			throw Err.invalidArgument(message: "Expected a static String argument for \(argname)")
-		}
-		return literalSegment.content.text
-	}
-	
-	private static func optionalStaticString(from expr: LabeledExprSyntax, argname: String) throws -> String? {
-		if expr.expression.is(NilLiteralExprSyntax.self) {
-			return nil
-		}
-		return try staticString(from: expr, argname: argname)
-	}
-	
-	private static func keyPath(from expr: LabeledExprSyntax, argname: String) throws -> [String] {
-		let ret: [String]
-		if let string = try? staticString(from: expr, argname: argname) {
-			ret = string.split(separator: ".", omittingEmptySubsequences: false).map(String.init)
-		} else {
-			guard let elements = expr.expression.as(ArrayExprSyntax.self)?.elements else {
-				throw Err.invalidArgument(message: "Expected an array of String for \(argname)")
-			}
-			ret = try elements.map{ element in
-				guard let segments = element.expression.as(StringLiteralExprSyntax.self)?.segments,
-						segments.count == 1,
-						case .stringSegment(let literalSegment)? = segments.first
-				else {
-					throw Err.invalidArgument(message: "Expected an array of String for \(argname)")
-				}
-				return literalSegment.content.text
-			}
-		}
-		guard !ret.isEmpty else {
-			throw Err.invalidArgument(message: "Expected non-empty array for \(argname)")
-		}
-		return ret
-	}
-	
-	private static func bool(from expr: LabeledExprSyntax, argname: String) throws -> Bool {
-		return switch expr.expression.as(BooleanLiteralExprSyntax.self)?.literal.text {
-			case BooleanLiteralExprSyntax(booleanLiteral:  true).literal.text?: true
-			case BooleanLiteralExprSyntax(booleanLiteral: false).literal.text?: false
-			default:
-				throw Err.invalidArgument(message: "Expected a literal Bool argument for \(argname)")
-		}
-	}
-	
-	private static func swiftType(from expr: LabeledExprSyntax, argname: String) throws -> ExprSyntax {
-		guard let type = expr.expression.as(MemberAccessExprSyntax.self)?.base else {
-			throw Err.invalidArgument(message: "Expected value to be a type for \(argname)")
-		}
-		return type.trimmed
-	}
-	
-	private static func optionalSwiftType(from expr: LabeledExprSyntax, argname: String) throws -> ExprSyntax? {
-		if expr.expression.is(NilLiteralExprSyntax.self) {
-			return nil
-		}
-		return try swiftType(from: expr, argname: argname)
 	}
 	
 }
