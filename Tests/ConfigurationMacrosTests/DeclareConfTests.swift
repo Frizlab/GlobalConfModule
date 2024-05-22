@@ -101,4 +101,29 @@ final class DeclareConfTests : XCTestCase {
 #endif
 	}
 	
+	func testUsageWithSpaceBeforeSelf() throws {
+#if canImport(ConfigurationMacros)
+		assertMacroExpansion("""
+				extension ConfKeys {
+					#declareConfKey("oslog", OSLog?   .self, unsafeNonIsolated: true, defaultValue: .default)
+				}
+				""",
+			expandedSource: #"""
+				extension ConfKeys {
+					public struct ConfKey_oslog : ConfKey {
+						public typealias Value = OSLog?
+						public nonisolated (unsafe) static let defaultValue: OSLog?! = .default
+					}
+					public var oslog: ConfKey_oslog.Type {
+					    ConfKey_oslog.self
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
 }

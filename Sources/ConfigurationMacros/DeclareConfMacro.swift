@@ -162,7 +162,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		guard let type = expr.expression.as(MemberAccessExprSyntax.self)?.base else {
 			throw Err.invalidArgument(message: "Expected value to be a type for \(argname)")
 		}
-		return type
+		return type.trimmed
 	}
 	
 	private static func optionalSwiftType(from expr: LabeledExprSyntax, argname: String) throws -> ExprSyntax? {
