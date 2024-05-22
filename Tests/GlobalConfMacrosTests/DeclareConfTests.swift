@@ -9,8 +9,8 @@ import SwiftSyntaxMacrosTestSupport
 
 /* Macro implementations build for the host, so the corresponding module is not available when cross-compiling.
  * Cross-compiled tests may still make use of the macro itself in end-to-end tests. */
-#if canImport(ConfigurationMacros)
-import ConfigurationMacros
+#if canImport(GlobalConfMacros)
+import GlobalConfMacros
 
 private let testMacros: [String: Macro.Type] = [
 	"declareConfKey": DeclareConfMacro.self,
@@ -23,7 +23,7 @@ private let testMacros: [String: Macro.Type] = [
 final class DeclareConfTests : XCTestCase {
 	
 	func testBasicUsage() throws {
-#if canImport(ConfigurationMacros)
+#if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
 				import Configuration
 				extension ConfKeys {
@@ -33,7 +33,7 @@ final class DeclareConfTests : XCTestCase {
 			expandedSource: #"""
 				import Configuration
 				extension ConfKeys {
-					public struct MyBoolConfKey : ConfKey {
+					public enum MyBoolConfKey : ConfKey {
 						public typealias Value = Bool
 						public static let defaultValue: Bool! = .some(true)
 					}
@@ -50,7 +50,7 @@ final class DeclareConfTests : XCTestCase {
 	}
 	
 	func testBasicUsageNonStandardContainer() throws {
-#if canImport(ConfigurationMacros)
+#if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
 				import Configuration
 				extension ConfKeys.MyLib {
@@ -60,7 +60,7 @@ final class DeclareConfTests : XCTestCase {
 			expandedSource: #"""
 				import Configuration
 				extension ConfKeys.MyLib {
-					public struct ConfKey_myBool : ConfKeyMainActor {
+					public enum ConfKey_myBool : ConfKeyMainActor {
 						public typealias Value = Bool
 						public static let defaultValue: Bool! = .some(true)
 					}
@@ -77,7 +77,7 @@ final class DeclareConfTests : XCTestCase {
 	}
 	
 	func testBasicUsageNonIsolated() throws {
-#if canImport(ConfigurationMacros)
+#if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
 				extension ConfKeys {
 					#declareConfKey("oslog", OSLog?.self, unsafeNonIsolated: true, defaultValue: .default)
@@ -85,7 +85,7 @@ final class DeclareConfTests : XCTestCase {
 				""",
 			expandedSource: #"""
 				extension ConfKeys {
-					public struct ConfKey_oslog : ConfKey {
+					public enum ConfKey_oslog : ConfKey {
 						public typealias Value = OSLog?
 						public nonisolated (unsafe) static let defaultValue: OSLog?! = .some(.default)
 					}
@@ -102,7 +102,7 @@ final class DeclareConfTests : XCTestCase {
 	}
 	
 	func testBasicFactoryUsage() throws {
-#if canImport(ConfigurationMacros)
+#if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
 				extension ConfKeys {
 					#declareServiceFactoryKey("oslog", OSLog?.self, unsafeNonIsolated: true, defaultValue: { .default })
@@ -110,7 +110,7 @@ final class DeclareConfTests : XCTestCase {
 				""",
 			expandedSource: #"""
 				extension ConfKeys {
-					public struct ConfKey_oslog : ConfKey {
+					public enum ConfKey_oslog : ConfKey {
 						public typealias Value = (@Sendable () -> OSLog?)
 						public nonisolated (unsafe) static let defaultValue: (@Sendable () -> OSLog?)! = {
 						    .default
@@ -129,7 +129,7 @@ final class DeclareConfTests : XCTestCase {
 	}
 	
 	func testUsageWithSpaceBeforeSelf() throws {
-#if canImport(ConfigurationMacros)
+#if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
 				extension ConfKeys {
 					#declareServiceKey("oslog", OSLog?   .self, unsafeNonIsolated: true, defaultValue: .default)
@@ -137,7 +137,7 @@ final class DeclareConfTests : XCTestCase {
 				""",
 			expandedSource: #"""
 				extension ConfKeys {
-					public struct ConfKey_oslog : ConfKey {
+					public enum ConfKey_oslog : ConfKey {
 						public typealias Value = OSLog?
 						public nonisolated (unsafe) static let defaultValue: OSLog?! = .default
 					}

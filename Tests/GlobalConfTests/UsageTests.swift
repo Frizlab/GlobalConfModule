@@ -2,7 +2,7 @@ import Foundation
 import XCTest
 
 /* No @testable import: we mostly test whether the architecture works; we must be as close as possible to a regular client’s use. */
-import Configuration
+import GlobalConfModule
 
 
 

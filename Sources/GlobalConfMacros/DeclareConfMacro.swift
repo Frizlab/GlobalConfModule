@@ -124,7 +124,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		}
 		return [
 			#"""
-				public struct \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
+				public enum \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
 					public typealias Value = \#(raw: confType)
 					public \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValue)
 				}

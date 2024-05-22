@@ -14,7 +14,7 @@ public macro declareConfKey<T>(
 	in confContainer: Any.Type = ConfKeys.self,
 	_ customConfKeyName: String? = nil,
 	defaultValue: T
-) = #externalMacro(module: "ConfigurationMacros", type: "DeclareConfMacro")
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
 
 /* Same as declareConfKey, but the default value can be `nil`. */
 @freestanding(declaration, names: arbitrary)
@@ -26,7 +26,7 @@ public macro declareServiceKey<T>(
 	in confContainer: Any.Type = ConfKeys.self,
 	_ customConfKeyName: String? = nil,
 	defaultValue: T!
-) = #externalMacro(module: "ConfigurationMacros", type: "DeclareConfMacro")
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
 
 /* Same as declareServiceKey, but the value is a factory. */
 @freestanding(declaration, names: arbitrary)
@@ -38,7 +38,7 @@ public macro declareServiceFactoryKey<T>(
 	in confContainer: Any.Type = ConfKeys.self,
 	_ customConfKeyName: String? = nil,
 	defaultValue: (@Sendable () -> T)!
-) = #externalMacro(module: "ConfigurationMacros", type: "DeclareConfMacro")
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
 
 /* To declare a new namespace for some conf keys.
  * This is disabled because it does not work.
@@ -50,4 +50,4 @@ public macro declareServiceFactoryKey<T>(
 //public macro declareKeyNameSpace(
 //	_ accessorName: String,
 //	_ namespaceKeyName: String? = nil
-//) = #externalMacro(module: "ConfigurationMacros", type: "DeclareConfNamespaceMacro")
+//) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfNamespaceMacro")

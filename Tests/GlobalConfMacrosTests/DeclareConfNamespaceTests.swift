@@ -9,8 +9,8 @@ import SwiftSyntaxMacrosTestSupport
 
 /* Macro implementations build for the host, so the corresponding module is not available when cross-compiling.
  * Cross-compiled tests may still make use of the macro itself in end-to-end tests. */
-#if canImport(ConfigurationMacros)
-import ConfigurationMacros
+#if canImport(GlobalConfMacros)
+import GlobalConfMacros
 
 private let testMacros: [String: Macro.Type] = [
 	"declareKeyNameSpace": DeclareConfNamespaceMacro.self,
@@ -21,7 +21,7 @@ private let testMacros: [String: Macro.Type] = [
 final class DeclareConfNamespaceTests : XCTestCase {
 	
 	func testBasicUsage() throws {
-#if canImport(ConfigurationMacros)
+#if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
 				import Configuration
 				extension ConfKeys {
@@ -46,7 +46,7 @@ final class DeclareConfNamespaceTests : XCTestCase {
 	}
 	
 	func testCustomKeyNameUsage() throws {
-#if canImport(ConfigurationMacros)
+#if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
 				import Configuration
 				extension ConfKeys {

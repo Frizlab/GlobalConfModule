@@ -1,6 +1,6 @@
 import Foundation
 
-import Configuration
+import GlobalConfModule
 
 
 

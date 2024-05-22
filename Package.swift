@@ -7,7 +7,7 @@ import CompilerPluginSupport
 let swiftSettings: [SwiftSetting] = [.enableExperimentalFeature("StrictConcurrency")]
 
 let package = Package(
-	name: "Configuration",
+	name: "GlobalConfModule",
 	platforms: [
 		.macOS(.v10_15),
 		.tvOS(.v13),
@@ -15,7 +15,7 @@ let package = Package(
 		.watchOS(.v6)
 	],
 	products: [
-		.library(name: "Configuration", targets: ["Configuration"])
+		.library(name: "GlobalConfModule", targets: ["GlobalConfModule"])
 	],
 	dependencies: [
 		.package(url: "https://github.com/apple/swift-service-context.git", from: "1.0.0"),
@@ -26,22 +26,22 @@ let package = Package(
 		.package(url: "https://github.com/Frizlab/UnwrapOrThrow.git",       from: "1.0.1"),
 	],
 	targets: [
-		.target(name: "Configuration", dependencies: [
-			.target(name: "ConfigurationMacros"),
+		.target(name: "GlobalConfModule", dependencies: [
+			.target(name: "GlobalConfMacros"),
 			.product(name: "SafeGlobal",           package: "SafeGlobal"),
 			.product(name: "ServiceContextModule", package: "swift-service-context"),
-		], swiftSettings: swiftSettings),
-		.testTarget(name: "ConfigurationTests", dependencies: [
-			"Configuration",
-		], swiftSettings: swiftSettings),
+		], path: "Sources/GlobalConf", swiftSettings: swiftSettings),
+		.testTarget(name: "GlobalConfModuleTests", dependencies: [
+			"GlobalConfModule",
+		], path: "Tests/GlobalConfTests", swiftSettings: swiftSettings),
 		
-		.macro(name: "ConfigurationMacros", dependencies: [
+		.macro(name: "GlobalConfMacros", dependencies: [
 			.product(name: "SwiftSyntaxMacros",   package: "swift-syntax"),
 			.product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
 			.product(name: "UnwrapOrThrow",       package: "UnwrapOrThrow"),
 		], swiftSettings: swiftSettings),
-		.testTarget(name: "ConfigurationMacrosTests", dependencies: [
-			"ConfigurationMacros",
+		.testTarget(name: "GlobalConfMacrosTests", dependencies: [
+			"GlobalConfMacros",
 			.product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
 		], swiftSettings: swiftSettings)
 	]
