@@ -18,15 +18,6 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		
 	}
 	
-	/* Example of use:
-	 *   #conf("OSLog", OSLog?.self, unsafeNonIsolated: true, ConfKeys.self, ["urlRequestOperation", "oslog"], .default)
-	 *   /* The unsafeNonIsolated and conf key container (here `ConfKeys.self`) parameters are optional. */
-	 * Arguments:
-	 *   - Name of the key to create for the configuration;
-	 *   - Type of the configuration entry;
-	 *   - Optional: pass true for unsafeNonIsolated if the configuration uses an unsafe type;
-	 *   - The path to the conf key to create;
-	 *   - The default value for the configuration. */
 	public static func expansion(of node: some FreestandingMacroExpansionSyntax, in context: some MacroExpansionContext) throws -> [DeclSyntax] {
 #if canImport(SwiftSyntax510)
 		guard let macroName = MacroName(rawValue: node.macroName.text) else {
