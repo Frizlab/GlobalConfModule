@@ -10,6 +10,7 @@ struct ConfigurationMacrosPlugin : CompilerPlugin {
 	
 	let providingMacros: [Macro.Type] = [
 		DeclareConfMacro.self,
+		DeclareConfNamespaceMacro.self,
 	]
 	
 }
