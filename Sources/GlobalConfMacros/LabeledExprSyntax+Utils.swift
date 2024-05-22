@@ -57,10 +57,13 @@ extension LabeledExprSyntax {
 	}
 	
 	func extractSwiftType(argname: String) throws -> ExprSyntax {
-		guard let type = expression.as(MemberAccessExprSyntax.self)?.base else {
-			throw Err.invalidArgument(message: "Expected value to be a type for \(argname)")
+		guard let memberAccess = expression.as(MemberAccessExprSyntax.self), let base = memberAccess.base else {
+			throw Err.invalidArgument(message: "Expected member access expression to get a Type for \(argname)")
 		}
-		return type.trimmed
+		guard memberAccess.declName.baseName.text == "self", memberAccess.declName.argumentNames == nil else {
+			throw Err.invalidArgument(message: "Expected member access expression to be a type for \(argname)")
+		}
+		return base.trimmed
 	}
 	
 	func extractOptionalSwiftType(argname: String) throws -> ExprSyntax? {
