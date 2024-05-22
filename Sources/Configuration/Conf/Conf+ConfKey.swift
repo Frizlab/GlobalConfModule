@@ -58,7 +58,7 @@ public extension Conf {
 
 public extension Conf {
 	
-	/* *** Accessing the root value (base propagated in sub-Tasks) for a given key (or key path). *** */
+	/* *** Accessing the root value (the base that is propagated in sub-Tasks) for a given key (or key path). *** */
 	
 	static func rootValue<InjectedKey : ConfKey>(for keyType: InjectedKey.Type = InjectedKey.self) -> InjectedKey.Value {
 		return Conf.rootContext[InjectedKey.self] ?? InjectedKey.defaultValue
