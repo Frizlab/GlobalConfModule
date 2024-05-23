@@ -31,9 +31,34 @@ final class DeclareConfNamespaceTests : XCTestCase {
 			expandedSource: #"""
 				import Configuration
 				extension ConfKeys {
-					struct ConfNamespace_myNamespace {
+					public struct ConfNamespace_myNamespace {
 					}
-					var myNamespace: ConfNamespace_myNamespace {
+					public var myNamespace: ConfNamespace_myNamespace {
+					    ConfNamespace_myNamespace()
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
+	func testBasicInternalUsage() throws {
+#if canImport(GlobalConfMacros)
+		assertMacroExpansion("""
+				import Configuration
+				extension ConfKeys {
+					#declareKeyNameSpace(visibility: .internal, "myNamespace")
+				}
+				""",
+			expandedSource: #"""
+				import Configuration
+				extension ConfKeys {
+					internal struct ConfNamespace_myNamespace {
+					}
+					internal var myNamespace: ConfNamespace_myNamespace {
 					    ConfNamespace_myNamespace()
 					}
 				}
@@ -56,9 +81,9 @@ final class DeclareConfNamespaceTests : XCTestCase {
 			expandedSource: #"""
 				import Configuration
 				extension ConfKeys {
-					struct MyNamespace {
+					public struct MyNamespace {
 					}
-					var myNamespace: MyNamespace {
+					public var myNamespace: MyNamespace {
 					    MyNamespace()
 					}
 				}

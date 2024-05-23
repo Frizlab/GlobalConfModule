@@ -16,8 +16,18 @@ public struct DeclareConfNamespaceMacro : DeclarationMacro, FreestandingMacro {
 #else
 		var args = Array(node.argumentList.reversed())
 #endif
-		/* Get accessorName. */
-		let accessorNameArg = try args.popLast() ?! Err.missingArgument(argname: "accessorName")
+		var curAmbiguous: LabeledExprSyntax
+		/* Get optional parameter visibility and next arg (accessorName). */
+		curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+		let visibilityArg: LabeledExprSyntax
+		let accessorNameArg: LabeledExprSyntax
+		if curAmbiguous.label?.text == "visibility" {
+			visibilityArg = curAmbiguous
+			accessorNameArg = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+		} else {
+			visibilityArg = LabeledExprSyntax(label: "visibility", expression: MemberAccessExprSyntax(period: ".", name: "public"))
+			accessorNameArg = curAmbiguous
+		}
 		guard accessorNameArg.label == nil else {
 			throw Err.invalidSyntax(message: "accessorName argument should not have a label")
 		}
@@ -38,12 +48,14 @@ public struct DeclareConfNamespaceMacro : DeclarationMacro, FreestandingMacro {
 			throw Err.invalidSyntax(message: "Too many arguments to the macro")
 		}
 		
+		let visibility = try visibilityArg.extractVisibility(argname: "visibility")
+		
 		return [
 			/* Would would use an enum and have static vars if <https://forums.swift.org/t/pitch-metatype-keypaths/70767>.
 			 * For now we get “Key path cannot refer to static member” if we do this… */
-			"struct \(raw: namespaceKeyName) {}",
-			/* Would be `URLRequestOperation.Type {URLRequestOperation.self}` if we could use an enum. */
-			"var \(raw: accessorName): \(raw: namespaceKeyName) {\(raw: namespaceKeyName)()}"
+			"\(raw: visibility) struct \(raw: namespaceKeyName) {}",
+			/* Would be `TheType.Type {TheType.self}` if we could use an enum. */
+			"\(raw: visibility) var \(raw: accessorName): \(raw: namespaceKeyName) {\(raw: namespaceKeyName)()}"
 		]
 	}
 	

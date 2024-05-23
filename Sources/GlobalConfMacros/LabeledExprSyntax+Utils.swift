@@ -73,4 +73,13 @@ extension LabeledExprSyntax {
 		return try extractSwiftType(argname: argname)
 	}
 	
+	func extractVisibility(argname: String) throws -> String {
+		guard let memberAccess = expression.as(MemberAccessExprSyntax.self) else {
+			throw Err.invalidArgument(message: "Expected member access expression to get a visibility for \(argname)")
+		}
+		/* We don’t even verify it’s valid!
+		 * But we don’t need to; the compiler guarantees it is due to the macro definitions. */
+		return memberAccess.declName.baseName.text
+	}
+	
 }

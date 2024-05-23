@@ -34,8 +34,19 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 #else
 		var args = Array(node.argumentList.reversed())
 #endif
+		var curAmbiguous: LabeledExprSyntax
+		/* Get optional parameter visibility and next arg. */
+		curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+		let visibilityArg: LabeledExprSyntax
+		let confKeyArg: LabeledExprSyntax
+		if curAmbiguous.label?.text == "visibility" {
+			visibilityArg = curAmbiguous
+			confKeyArg = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+		} else {
+			visibilityArg = LabeledExprSyntax(label: "visibility", expression: MemberAccessExprSyntax(period: ".", name: "public"))
+			confKeyArg = curAmbiguous
+		}
 		/* Get confKey. */
-		let confKeyArg = try args.popLast() ?! Err.missingArgument(argname: "confKey")
 		guard confKeyArg.label == nil else {
 			throw Err.invalidSyntax(message: "confKey argument should not have a label")
 		}
@@ -44,8 +55,8 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		guard confTypeArg.label == nil else {
 			throw Err.invalidSyntax(message: "confType argument should not have a label")
 		}
-		/* Get optional parameter global actor or next arg. */
-		var curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "defaultValue")
+		/* Get optional parameter global actor and next arg. */
+		curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "defaultValue")
 		let actorArg: LabeledExprSyntax
 		if curAmbiguous.label?.text == "on" {
 			actorArg = curAmbiguous
@@ -53,7 +64,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		} else {
 			actorArg = LabeledExprSyntax(label: "on", expression: NilLiteralExprSyntax())
 		}
-		/* Get optional parameter unsafe nonisolated value or next arg. */
+		/* Get optional parameter unsafe nonisolated value and next arg. */
 		let nonIsolatedArg: LabeledExprSyntax
 		if curAmbiguous.label?.text == "unsafeNonIsolated" {
 			nonIsolatedArg = curAmbiguous
@@ -61,7 +72,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		} else {
 			nonIsolatedArg = LabeledExprSyntax(label: "unsafeNonIsolated", expression: BooleanLiteralExprSyntax(booleanLiteral: false))
 		}
-		/* Get optional parameter custom conf key name or next arg. */
+		/* Get optional parameter custom conf key name and next arg. */
 		let confKeyNameArg: LabeledExprSyntax
 		let defaultValueArg: LabeledExprSyntax
 		if curAmbiguous.label == nil {
@@ -80,6 +91,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		}
 		
 		return try expansionFor(
+			visibilityArg: visibilityArg,
 			confKeyArg: confKeyArg,
 			confTypeArg: confTypeArg,
 			actorArg: actorArg,
@@ -92,6 +104,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 	}
 	
 	private static func expansionFor(
+		visibilityArg: LabeledExprSyntax,
 		confKeyArg: LabeledExprSyntax,
 		confTypeArg: LabeledExprSyntax,
 		actorArg: LabeledExprSyntax,
@@ -101,6 +114,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		macroName: MacroName,
 		in context: some MacroExpansionContext
 	) throws -> [DeclSyntax] {
+		let visibility   = try visibilityArg .extractVisibility          (argname: "visibility")
 		let confKey      = try confKeyArg    .extractOptionalStaticString(argname: "confKey")
 		let confBaseType = try confTypeArg   .extractSwiftType           (argname: "confType")
 		let actor        = try actorArg      .extractOptionalSwiftType   (argname: "globalActor")
@@ -115,12 +129,12 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		}
 		return [
 			#"""
-				public enum \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
-					public typealias Value = \#(raw: confType)
-					public \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValue)
+				\#(raw: visibility) enum \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
+					\#(raw: visibility) typealias Value = \#(raw: confType)
+					\#(raw: visibility) \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValue)
 				}
 				"""#,
-			confKey.flatMap{ #"public var \#(raw: $0): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}"# },
+			confKey.flatMap{ #"\#(raw: visibility) var \#(raw: $0): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}"# },
 		].compactMap{ $0 }
 	}
 	

@@ -49,6 +49,60 @@ final class DeclareConfTests : XCTestCase {
 #endif
 	}
 	
+	func testBasicInternalUsage() throws {
+#if canImport(GlobalConfMacros)
+		assertMacroExpansion("""
+				import Configuration
+				extension ConfKeys {
+					#declareConfKey(visibility: .internal, "myBool", Bool.self, "MyBoolConfKey", defaultValue: true)
+				}
+				""",
+			expandedSource: #"""
+				import Configuration
+				extension ConfKeys {
+					internal enum MyBoolConfKey : ConfKey {
+						internal typealias Value = Bool
+						internal static let defaultValue: Bool! = .some(true)
+					}
+					internal var myBool: MyBoolConfKey.Type {
+					    MyBoolConfKey.self
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
+	func testInternalFQNUsage() throws {
+#if canImport(GlobalConfMacros)
+		assertMacroExpansion("""
+				import Configuration
+				extension ConfKeys {
+					#declareConfKey(visibility: GlobalConfModule.DeclarationVisibility.internal, "myBool", Bool.self, "MyBoolConfKey", defaultValue: true)
+				}
+				""",
+			expandedSource: #"""
+				import Configuration
+				extension ConfKeys {
+					internal enum MyBoolConfKey : ConfKey {
+						internal typealias Value = Bool
+						internal static let defaultValue: Bool! = .some(true)
+					}
+					internal var myBool: MyBoolConfKey.Type {
+					    MyBoolConfKey.self
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
 	func testBasicUsageNonStandardContainer() throws {
 #if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
