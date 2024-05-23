@@ -11,6 +11,10 @@ import ServiceContextModule
  * Note it would not matter if he did; we could give the ServiceContext directly. */
 public struct ConfContext : Sendable {
 	
+	public static func new() -> ConfContext {
+		return .init(.topLevel)
+	}
+	
 	internal var actualContext: ServiceContext
 	
 	internal init(_ actualContext: ServiceContext) {
