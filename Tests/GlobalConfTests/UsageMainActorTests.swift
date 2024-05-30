@@ -57,7 +57,7 @@ final class UsageMainActorTests : XCTestCase {
 		@InjectedConf()
 		var mainActorService: MainActorService
 		@InjectedConf(\.mainActorService)
-		var mainActorServiceFromKeyPath: MainActorService
+		var mainActorServiceFromKeyPath
 		
 		@InjectedConf(\.mainActorService2)
 		var otherMainActorService: MainActorService
