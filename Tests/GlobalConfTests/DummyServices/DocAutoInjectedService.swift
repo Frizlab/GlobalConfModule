@@ -5,7 +5,6 @@ import GlobalConfModule
 
 
 public final class DocAutoInjectedService {
-	
 }
 
 extension ConfKeys {

@@ -13,6 +13,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 	public enum MacroName : String {
 		
 		case declareConfKey
+		case declareConfFactoryKey
 		case declareServiceKey
 		case declareServiceFactoryKey
 		
@@ -124,6 +125,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		let defaultValue: ExprSyntax
 		switch macroName {
 			case .declareConfKey:           defaultValue = ".some(\(raw: defaultValueArg.expression))"; confType = confBaseType
+			case .declareConfFactoryKey:    defaultValue = ".some(\(raw: defaultValueArg.expression))"; confType = "(@Sendable () -> \(raw: confBaseType))"
 			case .declareServiceKey:        defaultValue = defaultValueArg.expression;                  confType = confBaseType
 			case .declareServiceFactoryKey: defaultValue = defaultValueArg.expression;                  confType = "(@Sendable () -> \(raw: confBaseType))"
 		}

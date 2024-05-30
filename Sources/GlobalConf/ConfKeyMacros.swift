@@ -34,6 +34,30 @@ public macro declareConfKey<T, A : GlobalActor>(
 	defaultValue: T
 ) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
 
+@freestanding(declaration, names: arbitrary)
+public macro declareConfFactoryKey<T>(
+	visibility: DeclarationVisibility = .public,
+	_ confKey: String?,
+	_ confType: T.Type,
+	unsafeNonIsolated: Bool = false,
+	in confContainer: Any.Type = ConfKeys.self,
+	_ customConfKeyName: String? = nil,
+	defaultValue: @Sendable () -> T
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
+
+/* Same as previous, but with a global actor. */
+@freestanding(declaration, names: arbitrary)
+public macro declareConfFactoryKey<T, A : GlobalActor>(
+	visibility: DeclarationVisibility = .public,
+	_ confKey: String?,
+	_ confType: T.Type,
+	on globalActor: A.Type,
+	unsafeNonIsolated: Bool = false,
+	in confContainer: Any.Type = ConfKeys.self,
+	_ customConfKeyName: String? = nil,
+	defaultValue: @Sendable () -> T
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
+
 /* Same as declareConfKey, but the default value can be `nil`. */
 @freestanding(declaration, names: arbitrary)
 public macro declareServiceKey<T>(

@@ -13,8 +13,9 @@ import SwiftSyntaxMacrosTestSupport
 import GlobalConfMacros
 
 private let testMacros: [String: Macro.Type] = [
-	"declareConfKey": DeclareConfMacro.self,
-	"declareServiceKey": DeclareConfMacro.self,
+	"declareConfKey":           DeclareConfMacro.self,
+	"declareConfFactoryKey":    DeclareConfMacro.self,
+	"declareServiceKey":        DeclareConfMacro.self,
 	"declareServiceFactoryKey": DeclareConfMacro.self,
 ]
 #endif
@@ -155,7 +156,34 @@ final class DeclareConfTests : XCTestCase {
 #endif
 	}
 	
-	func testBasicFactoryUsage() throws {
+	func testBasicConfFactoryUsage() throws {
+#if canImport(GlobalConfMacros)
+		assertMacroExpansion("""
+				extension ConfKeys {
+					#declareConfFactoryKey("randomInt", Int.self, defaultValue: { .random(in: 0..<42) })
+				}
+				""",
+			expandedSource: #"""
+				extension ConfKeys {
+					public enum ConfKey_randomInt : ConfKey {
+						public typealias Value = (@Sendable () -> Int)
+						public static let defaultValue: (@Sendable () -> Int)! = .some({
+						        .random(in: 0 ..< 42)
+						    })
+					}
+					public var randomInt: ConfKey_randomInt.Type {
+					    ConfKey_randomInt.self
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
+	func testBasicServiceFactoryUsage() throws {
 #if canImport(GlobalConfMacros)
 		assertMacroExpansion("""
 				extension ConfKeys {
