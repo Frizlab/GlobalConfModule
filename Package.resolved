@@ -26,15 +26,6 @@
         "revision" : "303e5c5c36d6a558407d364878df131c3546fad8",
         "version" : "510.0.2"
       }
-    },
-    {
-      "identity" : "unwraporthrow",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Frizlab/UnwrapOrThrow.git",
-      "state" : {
-        "revision" : "085ea7b599b0db956541b7189a57b0c98f15337f",
-        "version" : "1.0.1"
-      }
     }
   ],
   "version" : 2

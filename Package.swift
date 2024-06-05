@@ -23,7 +23,6 @@ let package = Package(
 		.package(url: "https://github.com/apple/swift-syntax.git",          "509.0.0"..<"511.0.0"),
 //		.package(url: "https://github.com/apple/swift-syntax.git",          from: "509.0.0"),
 		.package(url: "https://github.com/Frizlab/SafeGlobal.git",          from: "0.2.0"),
-		.package(url: "https://github.com/Frizlab/UnwrapOrThrow.git",       from: "1.0.1"),
 	],
 	targets: [
 		.target(name: "GlobalConfModule", dependencies: [
@@ -38,7 +37,6 @@ let package = Package(
 		.macro(name: "GlobalConfMacros", dependencies: [
 			.product(name: "SwiftSyntaxMacros",   package: "swift-syntax"),
 			.product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-			.product(name: "UnwrapOrThrow",       package: "UnwrapOrThrow"),
 		], swiftSettings: swiftSettings),
 		.testTarget(name: "GlobalConfMacrosTests", dependencies: [
 			"GlobalConfMacros",

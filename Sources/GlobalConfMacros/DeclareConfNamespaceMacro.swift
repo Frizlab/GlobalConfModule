@@ -4,7 +4,6 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
-import UnwrapOrThrow
 
 
 
@@ -18,12 +17,12 @@ public struct DeclareConfNamespaceMacro : DeclarationMacro, FreestandingMacro {
 #endif
 		var curAmbiguous: LabeledExprSyntax
 		/* Get optional parameter visibility and next arg (accessorName). */
-		curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+		curAmbiguous = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "confKey"))
 		let visibilityArg: LabeledExprSyntax
 		let accessorNameArg: LabeledExprSyntax
 		if curAmbiguous.label?.text == "visibility" {
 			visibilityArg = curAmbiguous
-			accessorNameArg = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+			accessorNameArg = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "confKey"))
 		} else {
 			visibilityArg = LabeledExprSyntax(label: "visibility", expression: MemberAccessExprSyntax(period: ".", name: "public"))
 			accessorNameArg = curAmbiguous

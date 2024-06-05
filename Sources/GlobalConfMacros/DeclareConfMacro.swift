@@ -4,7 +4,6 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
-import UnwrapOrThrow
 
 
 
@@ -37,12 +36,12 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 #endif
 		var curAmbiguous: LabeledExprSyntax
 		/* Get optional parameter visibility and next arg. */
-		curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+		curAmbiguous = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "confKey"))
 		let visibilityArg: LabeledExprSyntax
 		let confKeyArg: LabeledExprSyntax
 		if curAmbiguous.label?.text == "visibility" {
 			visibilityArg = curAmbiguous
-			confKeyArg = try args.popLast() ?! Err.missingArgument(argname: "confKey")
+			confKeyArg = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "confKey"))
 		} else {
 			visibilityArg = LabeledExprSyntax(label: "visibility", expression: MemberAccessExprSyntax(period: ".", name: "public"))
 			confKeyArg = curAmbiguous
@@ -52,16 +51,16 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 			throw Err.invalidSyntax(message: "confKey argument should not have a label")
 		}
 		/* Get confType. */
-		let confTypeArg = try args.popLast() ?! Err.missingArgument(argname: "confType")
+		let confTypeArg = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "confType"))
 		guard confTypeArg.label == nil else {
 			throw Err.invalidSyntax(message: "confType argument should not have a label")
 		}
 		/* Get optional parameter global actor and next arg. */
-		curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "defaultValue")
+		curAmbiguous = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "defaultValue"))
 		let actorArg: LabeledExprSyntax
 		if curAmbiguous.label?.text == "on" {
 			actorArg = curAmbiguous
-			curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "defaultValue")
+			curAmbiguous = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "defaultValue"))
 		} else {
 			actorArg = LabeledExprSyntax(label: "on", expression: NilLiteralExprSyntax())
 		}
@@ -69,7 +68,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		let nonIsolatedArg: LabeledExprSyntax
 		if curAmbiguous.label?.text == "unsafeNonIsolated" {
 			nonIsolatedArg = curAmbiguous
-			curAmbiguous = try args.popLast() ?! Err.missingArgument(argname: "defaultValue")
+			curAmbiguous = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "defaultValue"))
 		} else {
 			nonIsolatedArg = LabeledExprSyntax(label: "unsafeNonIsolated", expression: BooleanLiteralExprSyntax(booleanLiteral: false))
 		}
@@ -78,7 +77,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		let defaultValueArg: LabeledExprSyntax
 		if curAmbiguous.label == nil {
 			confKeyNameArg = curAmbiguous
-			defaultValueArg = try args.popLast() ?! Err.missingArgument(argname: "defaultValue")
+			defaultValueArg = try args.popLast().unwrap(orThrow: Err.missingArgument(argname: "defaultValue"))
 		} else {
 			confKeyNameArg = LabeledExprSyntax(label: nil, expression: NilLiteralExprSyntax())
 			defaultValueArg = curAmbiguous
