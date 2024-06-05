@@ -1,6 +1,5 @@
 import Foundation
 
-import SafeGlobal
 import ServiceContextModule
 
 

@@ -22,12 +22,10 @@ let package = Package(
 		/* TODO: CI should test the package w/ all of the major versions we support of swift-syntax specified explicitly. */
 		.package(url: "https://github.com/apple/swift-syntax.git",          "509.0.0"..<"511.0.0"),
 //		.package(url: "https://github.com/apple/swift-syntax.git",          from: "509.0.0"),
-		.package(url: "https://github.com/Frizlab/SafeGlobal.git",          from: "0.2.0"),
 	],
 	targets: [
 		.target(name: "GlobalConfModule", dependencies: [
 			.target(name: "GlobalConfMacros"),
-			.product(name: "SafeGlobal",           package: "SafeGlobal"),
 			.product(name: "ServiceContextModule", package: "swift-service-context"),
 		], path: "Sources/GlobalConf", swiftSettings: swiftSettings),
 		.testTarget(name: "GlobalConfModuleTests", dependencies: [
