@@ -9,9 +9,5 @@ extension ConfKeys {
 }
 
 extension Conf {
-	
-	static var randomInt: Int {
-		Conf[\.randomInt]()
-	}
-	
+	#declareConfFactoryAccessor(\.randomInt, Int.self)
 }

@@ -10,37 +10,37 @@ import ServiceContextModule
 
 
 @freestanding(declaration, names: arbitrary)
-public macro declareConfAccessor<InjectedKey : ConfKey>(
+public macro declareConfAccessor<InjectedKey : ConfKey, AccessedType>(
 	_ confKeyPath: KeyPath<ConfKeys, InjectedKey.Type>,
-	_ confType: InjectedKey.Value.Type/* = InjectedKey.Value.self*/,
+	_ confType: AccessedType.Type/* = InjectedKey.Value.self*/,
 	unsafeNonIsolated: Bool = false,
 	_ customAccessorName: String? = nil
-) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro")
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro") where InjectedKey.Value == AccessedType
 
 /* Same as previous, but with a global actor. */
 @freestanding(declaration, names: arbitrary)
-public macro declareConfAccessor<InjectedKey : ConfKey, A : GlobalActor>(
+public macro declareConfAccessor<InjectedKey : ConfKey, AccessedType, A : GlobalActor>(
 	_ confKeyPath: KeyPath<ConfKeys, InjectedKey.Type>,
-	_ confType: InjectedKey.Value.Type/* = InjectedKey.Value.self*/,
+	_ confType: AccessedType.Type/* = InjectedKey.Value.self*/,
 	on globalActor: A.Type,
 	unsafeNonIsolated: Bool = false,
 	_ customAccessorName: String? = nil
-) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro")
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro") where InjectedKey.Value == AccessedType
 
 @freestanding(declaration, names: arbitrary)
-public macro declareConfFactoryAccessor<InjectedKey : ConfKey>(
+public macro declareConfFactoryAccessor<InjectedKey : ConfKey, AccessedType>(
 	_ confKeyPath: KeyPath<ConfKeys, InjectedKey.Type>,
-	_ confType: InjectedKey.Value.Type/* = InjectedKey.Value.self*/,
+	_ confType: AccessedType.Type/* = InjectedKey.Value.self*/,
 	unsafeNonIsolated: Bool = false,
 	_ customAccessorName: String? = nil
-) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro")
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro") where InjectedKey.Value == @Sendable () -> AccessedType
 
 /* Same as previous, but with a global actor. */
 @freestanding(declaration, names: arbitrary)
-public macro declareConfFactoryAccessor<InjectedKey : ConfKey, A : GlobalActor>(
+public macro declareConfFactoryAccessor<InjectedKey : ConfKey, AccessedType, A : GlobalActor>(
 	_ confKeyPath: KeyPath<ConfKeys, InjectedKey.Type>,
-	_ confType: InjectedKey.Value.Type/* = InjectedKey.Value.self*/,
+	_ confType: AccessedType.Type/* = InjectedKey.Value.self*/,
 	on globalActor: A.Type,
 	unsafeNonIsolated: Bool = false,
 	_ customAccessorName: String? = nil
-) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro")
+) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro") where InjectedKey.Value == @Sendable () -> AccessedType
