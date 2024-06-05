@@ -78,7 +78,7 @@ final class DeclareConfAccessorTests : XCTestCase {
 			expandedSource: #"""
 				import Configuration
 				extension Conf {
-					internal static var amazingNamespace_myBool: Bool {
+					internal static var myBool: Bool {
 					    Conf[\.amazingNamespace.myBool]
 					}
 				}

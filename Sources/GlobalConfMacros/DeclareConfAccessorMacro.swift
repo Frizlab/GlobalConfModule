@@ -96,7 +96,7 @@ public struct DeclareConfAccessorMacro : DeclarationMacro, FreestandingMacro {
 		let confType     = try confTypeArg   .extractSwiftType           (argname: "confType")
 		let actor        = try actorArg      .extractOptionalSwiftType   (argname: "globalActor")
 		let nonIsolated  = try nonIsolatedArg.extractBool                (argname: "unsafeNonIsolated")
-		let name         = try customNameArg .extractOptionalStaticString(argname: "customConfKeyName") ?? confKeyPath.dropFirst().replacingOccurrences(of: ".", with: "_")
+		let name         = try customNameArg .extractOptionalStaticString(argname: "customConfKeyName") ?? String(confKeyPath.split(separator: ".", omittingEmptySubsequences: false).last!)
 		let isFactory = switch macroName {
 			case .declareConfAccessor:        false
 			case .declareConfFactoryAccessor: true
