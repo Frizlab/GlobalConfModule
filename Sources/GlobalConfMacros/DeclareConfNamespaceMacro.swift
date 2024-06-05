@@ -51,7 +51,8 @@ public struct DeclareConfNamespaceMacro : DeclarationMacro, FreestandingMacro {
 		
 		return [
 			/* Would would use an enum and have static vars if <https://forums.swift.org/t/pitch-metatype-keypaths/70767>.
-			 * For now we get “Key path cannot refer to static member” if we do this… */
+			 * For now we get “Key path cannot refer to static member” if we do this…
+			 * The evolution doc is up! <https://github.com/apple/swift-evolution/blob/main/proposals/0438-metatype-keypath.md> */
 			"\(raw: visibility) struct \(raw: namespaceKeyName) {}",
 			/* Would be `TheType.Type {TheType.self}` if we could use an enum. */
 			"\(raw: visibility) var \(raw: accessorName): \(raw: namespaceKeyName) {\(raw: namespaceKeyName)()}"
