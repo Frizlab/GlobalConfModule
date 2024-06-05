@@ -23,7 +23,7 @@ extension LabeledExprSyntax {
 		return try extractStaticString(argname: argname)
 	}
 	
-	func extractKeyPath(argname: String) throws -> [String] {
+	func extractKeyPathString(argname: String) throws -> [String] {
 		let ret: [String]
 		if let string = try? extractStaticString(argname: argname) {
 			ret = string.split(separator: ".", omittingEmptySubsequences: false).map(String.init)
@@ -80,6 +80,15 @@ extension LabeledExprSyntax {
 		/* We don’t even verify it’s valid!
 		 * But we don’t need to; the compiler guarantees it is due to the macro definitions. */
 		return memberAccess.declName.baseName.text
+	}
+	
+	func extractKeyPath(argname: String) throws -> String {
+		guard let keyPath = expression.as(KeyPathExprSyntax.self) else {
+			throw Err.invalidArgument(message: "Expected key path expression for \(argname)")
+		}
+		/* We don’t even verify it’s valid!
+		 * But we don’t need to; the compiler guarantees it is due to the macro definitions. */
+		return "\(keyPath.components)"
 	}
 	
 }
