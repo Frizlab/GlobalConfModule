@@ -13,7 +13,7 @@ import SwiftSyntaxMacrosTestSupport
 import GlobalConfMacros
 
 private let testMacros: [String: Macro.Type] = [
-	"declareKeyNameSpace": DeclareConfNamespaceMacro.self,
+	"declareNamespaceKey": DeclareConfNamespaceMacro.self,
 ]
 #endif
 
@@ -25,7 +25,7 @@ final class DeclareConfNamespaceTests : XCTestCase {
 		assertMacroExpansion("""
 				import Configuration
 				extension ConfKeys {
-					#declareKeyNameSpace("myNamespace")
+					#declareNamespaceKey("myNamespace")
 				}
 				""",
 			expandedSource: #"""
@@ -50,7 +50,7 @@ final class DeclareConfNamespaceTests : XCTestCase {
 		assertMacroExpansion("""
 				import Configuration
 				extension ConfKeys {
-					#declareKeyNameSpace(visibility: .internal, "myNamespace")
+					#declareNamespaceKey(visibility: .internal, "myNamespace")
 				}
 				""",
 			expandedSource: #"""
@@ -75,7 +75,7 @@ final class DeclareConfNamespaceTests : XCTestCase {
 		assertMacroExpansion("""
 				import Configuration
 				extension ConfKeys {
-					#declareKeyNameSpace("myNamespace", "MyNamespace")
+					#declareNamespaceKey("myNamespace", "MyNamespace")
 				}
 				""",
 			expandedSource: #"""
