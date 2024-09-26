@@ -156,7 +156,7 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 				\#(nonIsolatedExpression)
 				\#(raw: visibility) enum \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
 					\#(raw: visibility) typealias Value = \#(raw: finalConfType)
-					\#(raw: visibility) \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: finalConfType)! = \#(raw: defaultValue)
+					\#(raw: visibility) static let defaultValue: \#(raw: finalConfType)! = \#(raw: defaultValue)
 				}
 				"""#,
 			confKey.flatMap{ #"\#(raw: visibility) var \#(raw: $0): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}"# },

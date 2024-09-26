@@ -148,7 +148,7 @@ final class DeclareConfTests : XCTestCase {
 					}
 					public enum ConfKey_oslog : ConfKey {
 						public typealias Value = __macro_local_5OSLogfMu_
-						public nonisolated(unsafe) static let defaultValue: __macro_local_5OSLogfMu_! = .some(__macro_local_5OSLogfMu_(.default))
+						public static let defaultValue: __macro_local_5OSLogfMu_! = .some(__macro_local_5OSLogfMu_(.default))
 					}
 					public var oslog: ConfKey_oslog.Type {
 					    ConfKey_oslog.self
@@ -180,7 +180,7 @@ final class DeclareConfTests : XCTestCase {
 					}
 					public enum ConfKey_fileManager1 : ConfKey {
 						public typealias Value = __macro_local_11FileManagerfMu_
-						public nonisolated(unsafe) static let defaultValue: __macro_local_11FileManagerfMu_! = .some(__macro_local_11FileManagerfMu_(.default))
+						public static let defaultValue: __macro_local_11FileManagerfMu_! = .some(__macro_local_11FileManagerfMu_(.default))
 					}
 					public var fileManager1: ConfKey_fileManager1.Type {
 					    ConfKey_fileManager1.self
@@ -193,7 +193,7 @@ final class DeclareConfTests : XCTestCase {
 					}
 					public enum ConfKey_fileManager2 : ConfKey {
 						public typealias Value = __macro_local_11FileManagerfMu0_
-						public nonisolated(unsafe) static let defaultValue: __macro_local_11FileManagerfMu0_! = .some(__macro_local_11FileManagerfMu0_(.default))
+						public static let defaultValue: __macro_local_11FileManagerfMu0_! = .some(__macro_local_11FileManagerfMu0_(.default))
 					}
 					public var fileManager2: ConfKey_fileManager2.Type {
 					    ConfKey_fileManager2.self
@@ -278,7 +278,7 @@ final class DeclareConfTests : XCTestCase {
 					}
 					public enum ConfKey_oslog : ConfKey {
 						public typealias Value = __macro_local_5OSLogfMu_
-						public nonisolated(unsafe) static let defaultValue: __macro_local_5OSLogfMu_! = __macro_local_5OSLogfMu_(.default)
+						public static let defaultValue: __macro_local_5OSLogfMu_! = __macro_local_5OSLogfMu_(.default)
 					}
 					public var oslog: ConfKey_oslog.Type {
 					    ConfKey_oslog.self
