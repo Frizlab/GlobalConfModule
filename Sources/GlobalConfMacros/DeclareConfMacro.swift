@@ -120,19 +120,43 @@ public struct DeclareConfMacro : DeclarationMacro, FreestandingMacro {
 		let actor        = try actorArg      .extractOptionalSwiftType   (argname: "globalActor")
 		let nonIsolated  = try nonIsolatedArg.extractBool                (argname: "unsafeNonIsolated")
 		let confKeyName  = try confKeyNameArg.extractOptionalStaticString(argname: "customConfKeyName") ?? confKey.flatMap{ "ConfKey_\($0)" } ?? context.makeUniqueName("ConfKey").text
-		let confType: ExprSyntax
+		let nonIsolatedExpression: ExprSyntax
+		let confTypeWithNonIsolated: ExprSyntax
+		if !nonIsolated {
+			confTypeWithNonIsolated = confBaseType
+			nonIsolatedExpression = ""
+		} else {
+			confTypeWithNonIsolated = "\(raw: context.makeUniqueName("\(confBaseType)".filter{ $0.isLetter || $0.isNumber }))"
+			nonIsolatedExpression = #"""
+				\#(raw: visibility) struct \#(confTypeWithNonIsolated) : @unchecked Sendable {
+					\#(raw: visibility) let value: \#(confBaseType)
+					\#(raw: visibility) init(_ value: \#(confBaseType)) {
+						self.value = value
+					}
+				}
+				
+				"""#
+		}
+		let defaultValueExpression: ExprSyntax
+		if !nonIsolated {
+			defaultValueExpression = defaultValueArg.expression
+		} else {
+			defaultValueExpression = #"\#(confTypeWithNonIsolated)(\#(defaultValueArg.expression))"#
+		}
+		let finalConfType: ExprSyntax
 		let defaultValue: ExprSyntax
 		switch macroName {
-			case .declareConfKey:           defaultValue = ".some(\(raw: defaultValueArg.expression))"; confType = confBaseType
-			case .declareConfFactoryKey:    defaultValue = ".some(\(raw: defaultValueArg.expression))"; confType = "(@Sendable () -> \(raw: confBaseType))"
-			case .declareServiceKey:        defaultValue = defaultValueArg.expression;                  confType = confBaseType
-			case .declareServiceFactoryKey: defaultValue = defaultValueArg.expression;                  confType = "(@Sendable () -> \(raw: confBaseType))"
+			case .declareConfKey:           defaultValue = ".some(\(raw: defaultValueExpression))"; finalConfType = confTypeWithNonIsolated
+			case .declareConfFactoryKey:    defaultValue = ".some(\(raw: defaultValueExpression))"; finalConfType = "(@Sendable () -> \(raw: confTypeWithNonIsolated))"
+			case .declareServiceKey:        defaultValue = defaultValueExpression;                  finalConfType = confTypeWithNonIsolated
+			case .declareServiceFactoryKey: defaultValue = defaultValueExpression;                  finalConfType = "(@Sendable () -> \(raw: confTypeWithNonIsolated))"
 		}
 		return [
 			#"""
+				\#(nonIsolatedExpression)
 				\#(raw: visibility) enum \#(raw: confKeyName) : ConfKey\#(raw: actor.flatMap{ "\($0)" } ?? "") {
-					\#(raw: visibility) typealias Value = \#(raw: confType)
-					\#(raw: visibility) \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: confType)! = \#(raw: defaultValue)
+					\#(raw: visibility) typealias Value = \#(raw: finalConfType)
+					\#(raw: visibility) \#(raw: nonIsolated ? "nonisolated(unsafe) " : "")static let defaultValue: \#(raw: finalConfType)! = \#(raw: defaultValue)
 				}
 				"""#,
 			confKey.flatMap{ #"\#(raw: visibility) var \#(raw: $0): \#(raw: confKeyName).Type {\#(raw: confKeyName).self}"# },

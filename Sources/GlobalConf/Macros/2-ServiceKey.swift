@@ -31,13 +31,16 @@ public macro declareServiceKey<T, A : GlobalActor>(
 	defaultValue: T!
 ) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
 
-/* Same as declareServiceKey, but the value is a factory. */
+/* Same as declareServiceKey, but the value is a factory.
+ * unsafeNonIsolated is not allowed for this one as it poses some issues:
+ *  we’d have to duplicate the definition for the unsafe variant specifically and make the default value a non-sendable block.
+ * This in turn will make the macro expansion more complicated…
+ * Because the unsafe variant should not be used and it’s a bit annoying to do, I’m not doing it, at least not now. */
 @freestanding(declaration, names: arbitrary)
 public macro declareServiceFactoryKey<T>(
 	visibility: DeclarationVisibility = .public,
 	_ confKey: String?,
 	_ confType: T.Type,
-	unsafeNonIsolated: Bool = false,
 	_ customConfKeyName: String? = nil,
 	defaultValue: (@Sendable () -> T)!
 ) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
@@ -49,7 +52,6 @@ public macro declareServiceFactoryKey<T, A : GlobalActor>(
 	_ confKey: String?,
 	_ confType: T.Type,
 	on globalActor: A.Type,
-	unsafeNonIsolated: Bool = false,
 	_ customConfKeyName: String? = nil,
 	defaultValue: (@Sendable () -> T)!
 ) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfMacro")
