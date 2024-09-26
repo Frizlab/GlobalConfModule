@@ -4,9 +4,12 @@ import ServiceContextModule
 
 
 
-/* We do not let the visibility be set and it is alwasy set to internal.
+/* We do not let the visibility be set and it is always set to internal.
  * The accessors are conveniences and should not be exported.
- * If you specifically want to export an accessor, define it manually. */
+ * If you specifically want to export an accessor, define it manually.
+ *
+ * Also we do not provide macros to define accessors for nonisolated(unsafe) keys.
+ * It would require duplicating the macros if it is at all possible in the current way of things, so we did not do it. */
 
 
 @freestanding(declaration, names: arbitrary)
