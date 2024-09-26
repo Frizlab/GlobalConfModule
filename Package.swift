@@ -20,8 +20,8 @@ let package = Package(
 	dependencies: [
 		.package(url: "https://github.com/apple/swift-service-context.git", from: "1.0.0"),
 		/* TODO: CI should test the package w/ all of the major versions we support of swift-syntax specified explicitly. */
-		.package(url: "https://github.com/apple/swift-syntax.git",          "509.0.0"..<"511.0.0"),
-//		.package(url: "https://github.com/apple/swift-syntax.git",          from: "509.0.0"),
+		.package(url: "https://github.com/swiftlang/swift-syntax.git",      "509.0.0"..<"511.0.0"),
+//		.package(url: "https://github.com/swiftlang/swift-syntax.git",      from: "509.0.0"),
 	],
 	targets: [
 		.target(name: "GlobalConfModule", dependencies: [
