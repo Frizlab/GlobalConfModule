@@ -30,9 +30,8 @@ public extension InjectedConf where InjectedType : AutoInjectableMainActor {
 	}
 	
 	@inlinable
-	@_unsafeInheritExecutor /* Same as withValue declared in the stdlib (and ServiceContext); because we do not want to hop off the executor at all. */
-	static func withValue<T>(_ newValue: InjectedType.AutoInjectionKey.Value, operation: () async throws -> T) async rethrows -> T {
-		try await Conf.withValue(newValue, for: InjectedType.AutoInjectionKey.self, operation: operation)
+	static func withValue<T>(_ newValue: InjectedType.AutoInjectionKey.Value, operation: () async throws -> T, isolation: isolated (any Actor)? = #isolation) async rethrows -> T {
+		try await Conf.withValue(newValue, for: InjectedType.AutoInjectionKey.self, operation: operation, isolation: isolation)
 	}
 }
 

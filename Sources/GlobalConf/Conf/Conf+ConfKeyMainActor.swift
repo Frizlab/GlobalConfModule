@@ -41,17 +41,15 @@ public extension Conf {
 	
 	/* *** Overridding the value for a given key (or key path) for the current Task for an asynchronous operation. *** */
 	
-	@_unsafeInheritExecutor /* Same as withValue declared in the stdlib (and ServiceContext); because we do not want to hop off the executor at all. */
-	static func withValue<InjectedKey : ConfKeyMainActor, T>(_ newValue: InjectedKey.Value, for keyType: InjectedKey.Type = InjectedKey.self, operation: () async throws -> T) async rethrows -> T {
+	static func withValue<InjectedKey : ConfKeyMainActor, T>(_ newValue: InjectedKey.Value, for keyType: InjectedKey.Type = InjectedKey.self, operation: () async throws -> T, isolation: isolated (any Actor)? = #isolation) async rethrows -> T {
 		var newContext = Conf.currentContext
 		newContext[InjectedKey.self] = newValue
-		return try await Conf.$currentTaskContext.withValue(newContext, operation: operation)
+		return try await Conf.$currentTaskContext.withValue(newContext, operation: operation, isolation: isolation)
 	}
 	
 	@inlinable
-	@_unsafeInheritExecutor /* Same as withValue declared in the stdlib (and ServiceContext); because we do not want to hop off the executor at all. */
-	static func withValue<InjectedKey : ConfKeyMainActor, T>(_ newValue: InjectedKey.Value, for keyPath: KeyPath<ConfKeys, InjectedKey.Type>, operation: () async throws -> T) async rethrows -> T {
-		return try await withValue(newValue, for: InjectedKey.self, operation: operation)
+	static func withValue<InjectedKey : ConfKeyMainActor, T>(_ newValue: InjectedKey.Value, for keyPath: KeyPath<ConfKeys, InjectedKey.Type>, operation: () async throws -> T, isolation: isolated (any Actor)? = #isolation) async rethrows -> T {
+		return try await withValue(newValue, for: InjectedKey.self, operation: operation, isolation: isolation)
 	}
 	
 }
