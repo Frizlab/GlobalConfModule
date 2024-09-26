@@ -67,6 +67,29 @@ final class DeclareConfAccessorTests : XCTestCase {
 #endif
 	}
 	
+	func testBasicUsageUnsafe() throws {
+#if canImport(GlobalConfMacros)
+		assertMacroExpansion(#"""
+				import Configuration
+				extension Conf {
+					#declareConfAccessor(\ConfKeys.myFileManager, FileManager.self, unsafeNonIsolated: true)
+				}
+				"""#,
+			expandedSource: #"""
+				import Configuration
+				extension Conf {
+					internal static var myFileManager: FileManager {
+					    Conf[\.myFileManager].value
+					}
+				}
+				"""#,
+			macros: testMacros
+		)
+#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform.")
+#endif
+	}
+	
 	func testNestedKeyUsage() throws {
 #if canImport(GlobalConfMacros)
 		assertMacroExpansion(#"""

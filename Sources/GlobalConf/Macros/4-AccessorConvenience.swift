@@ -13,6 +13,7 @@ import ServiceContextModule
 public macro declareConfAccessor<InjectedKey : ConfKey, AccessedType>(
 	_ confKeyPath: KeyPath<ConfKeys, InjectedKey.Type>,
 	_ confType: AccessedType.Type/* = InjectedKey.Value.self*/,
+	unsafeNonIsolated: Bool = false,
 	_ customAccessorName: String? = nil
 ) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro") where InjectedKey.Value == AccessedType
 
@@ -22,6 +23,7 @@ public macro declareConfAccessor<InjectedKey : ConfKey, AccessedType, A : Global
 	_ confKeyPath: KeyPath<ConfKeys, InjectedKey.Type>,
 	_ confType: AccessedType.Type/* = InjectedKey.Value.self*/,
 	on globalActor: A.Type,
+	unsafeNonIsolated: Bool = false,
 	_ customAccessorName: String? = nil
 ) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro") where InjectedKey.Value == AccessedType
 
@@ -29,6 +31,7 @@ public macro declareConfAccessor<InjectedKey : ConfKey, AccessedType, A : Global
 public macro declareConfFactoryAccessor<InjectedKey : ConfKey, AccessedType>(
 	_ confKeyPath: KeyPath<ConfKeys, InjectedKey.Type>,
 	_ confType: AccessedType.Type/* = InjectedKey.Value.self*/,
+	unsafeNonIsolated: Bool = false,
 	_ customAccessorName: String? = nil
 ) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro") where InjectedKey.Value == @Sendable () -> AccessedType
 
@@ -38,5 +41,6 @@ public macro declareConfFactoryAccessor<InjectedKey : ConfKey, AccessedType, A :
 	_ confKeyPath: KeyPath<ConfKeys, InjectedKey.Type>,
 	_ confType: AccessedType.Type/* = InjectedKey.Value.self*/,
 	on globalActor: A.Type,
+	unsafeNonIsolated: Bool = false,
 	_ customAccessorName: String? = nil
 ) = #externalMacro(module: "GlobalConfMacros", type: "DeclareConfAccessorMacro") where InjectedKey.Value == @Sendable () -> AccessedType
