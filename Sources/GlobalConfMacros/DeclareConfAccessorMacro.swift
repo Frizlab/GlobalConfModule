@@ -52,14 +52,6 @@ public struct DeclareConfAccessorMacro : DeclarationMacro, FreestandingMacro {
 		} else {
 			actorArg = LabeledExprSyntax(label: "on", expression: NilLiteralExprSyntax())
 		}
-		/* Get optional parameter unsafe nonisolated value and next arg. */
-		let nonIsolatedArg: LabeledExprSyntax
-		if let arg = curAmbiguous, arg.label?.text == "unsafeNonIsolated" {
-			nonIsolatedArg = arg
-			curAmbiguous = args.popLast()
-		} else {
-			nonIsolatedArg = LabeledExprSyntax(label: "unsafeNonIsolated", expression: BooleanLiteralExprSyntax(booleanLiteral: false))
-		}
 		/* Get optional parameter custom name value and next arg. */
 		let customNameArg: LabeledExprSyntax
 		if let arg = curAmbiguous, arg.label?.text == nil {
@@ -76,7 +68,6 @@ public struct DeclareConfAccessorMacro : DeclarationMacro, FreestandingMacro {
 			confKeyPathArg: confKeyPathArg,
 			confTypeArg: confTypeArg,
 			actorArg: actorArg,
-			nonIsolatedArg: nonIsolatedArg,
 			customNameArg: customNameArg,
 			macroName: macroName,
 			in: context
@@ -87,7 +78,6 @@ public struct DeclareConfAccessorMacro : DeclarationMacro, FreestandingMacro {
 		confKeyPathArg: LabeledExprSyntax,
 		confTypeArg: LabeledExprSyntax,
 		actorArg: LabeledExprSyntax,
-		nonIsolatedArg: LabeledExprSyntax,
 		customNameArg: LabeledExprSyntax,
 		macroName: MacroName,
 		in context: some MacroExpansionContext
@@ -95,14 +85,13 @@ public struct DeclareConfAccessorMacro : DeclarationMacro, FreestandingMacro {
 		let confKeyPath  = try confKeyPathArg.extractKeyPath             (argname: "confKeyPath")
 		let confType     = try confTypeArg   .extractSwiftType           (argname: "confType")
 		let actor        = try actorArg      .extractOptionalSwiftType   (argname: "globalActor")
-		let nonIsolated  = try nonIsolatedArg.extractBool                (argname: "unsafeNonIsolated")
 		let name         = try customNameArg .extractOptionalStaticString(argname: "customConfKeyName") ?? String(confKeyPath.split(separator: ".", omittingEmptySubsequences: false).last!)
 		let isFactory = switch macroName {
 			case .declareConfAccessor:        false
 			case .declareConfFactoryAccessor: true
 		}
 		return [
-			#"\#(raw: actor.flatMap{ "@\($0)" } ?? "") internal static var \#(raw: name): \#(raw: confType) {Conf[\\#(raw: confKeyPath)]\#(raw: nonIsolated ? ".value" : "")\#(raw: isFactory ? "()" : "")}"#
+			#"\#(raw: actor.flatMap{ "@\($0)" } ?? "") internal static var \#(raw: name): \#(raw: confType) {Conf[\\#(raw: confKeyPath)]\#(raw: isFactory ? "()" : "")}"#
 		]
 	}
 	
