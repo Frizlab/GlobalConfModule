@@ -1,24 +1,26 @@
 import Foundation
-import XCTest
+import Testing
 
 /* No @testable import: we mostly test whether the architecture works; we must be as close as possible to a regular client’s use. */
 import GlobalConfModule
 
 
 
-final class UsageTests : XCTestCase {
+struct UsageTests {
 	
+	@Test
 	func testUsingNoActorService() {
 		noActorService.printHello()
 		noActorServiceFromKeyPath.printHello()
 		InjectedConf<NoActorService>.value.printHello()
-		XCTAssertTrue(noActorService === InjectedConf<NoActorService>.value)
-		XCTAssertTrue(noActorServiceFromKeyPath === InjectedConf<NoActorService>.value)
+		#expect(noActorService === InjectedConf<NoActorService>.value)
+		#expect(noActorServiceFromKeyPath === InjectedConf<NoActorService>.value)
 	}
 	
+	@Test
 	func testUsingNoActorServiceWithFactory() {
-		XCTAssertTrue(noActorService === noActorService)
-		XCTAssertTrue(noActorFactoryService !== noActorFactoryService)
+		#expect(noActorService === noActorService)
+		#expect(noActorFactoryService !== noActorFactoryService)
 	}
 	
 	@InjectedConf()
