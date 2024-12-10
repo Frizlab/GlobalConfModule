@@ -148,11 +148,12 @@ final class DeclareConfAccessorTests : XCTestCase {
 				import Configuration
 				extension Conf {
 					internal static var myBool: Bool {
-					    Conf[\.myBool] ()
+						Conf[\.myBool]()
 					}
 				}
 				"""#,
-			macros: testMacros
+			macros: testMacros,
+			indentationWidth: .tabs(1)
 		)
 #else
 		throw XCTSkip("Macros are only supported when running tests for the host platform.")

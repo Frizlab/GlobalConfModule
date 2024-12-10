@@ -146,16 +146,18 @@ final class DeclareConfTests : XCTestCase {
 							self.value = value
 						}
 					}
+				
 					public enum ConfKey_oslog : ConfKey {
 						public typealias Value = __macro_local_5OSLogfMu_
 						public static let defaultValue: __macro_local_5OSLogfMu_! = .some(__macro_local_5OSLogfMu_(.default))
 					}
 					public var oslog: ConfKey_oslog.Type {
-					    ConfKey_oslog.self
+						ConfKey_oslog.self
 					}
 				}
 				"""#,
-			macros: testMacros
+			macros: testMacros,
+			indentationWidth: .tabs(1)
 		)
 #else
 		throw XCTSkip("Macros are only supported when running tests for the host platform.")
@@ -178,12 +180,13 @@ final class DeclareConfTests : XCTestCase {
 							self.value = value
 						}
 					}
+				
 					public enum ConfKey_fileManager1 : ConfKey {
 						public typealias Value = __macro_local_11FileManagerfMu_
 						public static let defaultValue: __macro_local_11FileManagerfMu_! = .some(__macro_local_11FileManagerfMu_(.default))
 					}
 					public var fileManager1: ConfKey_fileManager1.Type {
-					    ConfKey_fileManager1.self
+						ConfKey_fileManager1.self
 					}
 					public struct __macro_local_11FileManagerfMu0_ : @unchecked Sendable {
 						public let value: FileManager
@@ -191,16 +194,18 @@ final class DeclareConfTests : XCTestCase {
 							self.value = value
 						}
 					}
+				
 					public enum ConfKey_fileManager2 : ConfKey {
 						public typealias Value = __macro_local_11FileManagerfMu0_
 						public static let defaultValue: __macro_local_11FileManagerfMu0_! = .some(__macro_local_11FileManagerfMu0_(.default))
 					}
 					public var fileManager2: ConfKey_fileManager2.Type {
-					    ConfKey_fileManager2.self
+						ConfKey_fileManager2.self
 					}
 				}
 				"""#,
-			macros: testMacros
+			macros: testMacros,
+			indentationWidth: .tabs(1)
 		)
 #else
 		throw XCTSkip("Macros are only supported when running tests for the host platform.")
@@ -276,16 +281,18 @@ final class DeclareConfTests : XCTestCase {
 							self.value = value
 						}
 					}
+				
 					public enum ConfKey_oslog : ConfKey {
 						public typealias Value = __macro_local_5OSLogfMu_
 						public static let defaultValue: __macro_local_5OSLogfMu_! = __macro_local_5OSLogfMu_(.default)
 					}
 					public var oslog: ConfKey_oslog.Type {
-					    ConfKey_oslog.self
+						ConfKey_oslog.self
 					}
 				}
 				"""#,
-			macros: testMacros
+			macros: testMacros,
+			indentationWidth: .tabs(1)
 		)
 #else
 		throw XCTSkip("Macros are only supported when running tests for the host platform.")
