@@ -13,7 +13,7 @@ struct DocTests {
 	func testDependencyInjectionUsage() {
 		Conf.setRootValue(DefaultDocService(), for: \.docService)
 		docService.doAmazingStuff()
-		#expect(true)
+		#expect(Bool(true))
 	}
 	
 	@InjectedConf(\.docService)
