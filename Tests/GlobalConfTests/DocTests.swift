@@ -27,7 +27,7 @@ struct DocTests {
 	
 	@Test
 	func testAutoInjectedUsage() {
-		#expect(docAutoInjectedService != nil)
+		#expect(docAutoInjectedService as DocAutoInjectedService? != nil)
 	}
 	
 	@InjectedConf()
