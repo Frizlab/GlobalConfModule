@@ -7,9 +7,9 @@ import ServiceContextModule
 public extension InjectedConf where InjectedType : AutoInjectable {
 	
 	init(customContext: ConfContext? = nil) {
-		let defaultValue = InjectedType.AutoInjectionKey.defaultValue
-		if let customContext {self.erasedAccessor = { customContext.actualContext[InjectedType.AutoInjectionKey.self] ?? defaultValue! }}
-		else                 {self.erasedAccessor = {         Conf.currentContext[InjectedType.AutoInjectionKey.self] ?? defaultValue! }}
+		let defaultValue = { @Sendable in InjectedType.AutoInjectionKey.defaultValue }
+		if let customContext {self.erasedAccessor = { customContext.actualContext[InjectedType.AutoInjectionKey.self] ?? defaultValue()! }}
+		else                 {self.erasedAccessor = {         Conf.currentContext[InjectedType.AutoInjectionKey.self] ?? defaultValue()! }}
 	}
 	
 }
