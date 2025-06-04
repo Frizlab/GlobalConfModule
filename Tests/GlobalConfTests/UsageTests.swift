@@ -43,8 +43,6 @@ final class UsageTests : XCTestCase {
 		XCTAssertEqual(DefaultInitTrackedService.initCount, 0)
 	}
 	
-	private let testNoDefaultValueCalledWhenOverrideIsSetLock = NSLock()
-	
 	@InjectedConf(\.initTrackedService)
 	var initTrackedService: InitTrackedService
 	
