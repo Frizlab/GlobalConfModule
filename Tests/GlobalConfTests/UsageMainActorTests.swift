@@ -8,6 +8,22 @@ import GlobalConfModule
 
 final class UsageMainActorTests : XCTestCase {
 	
+	class override func setUp() {
+		super.setUp()
+		
+		/* For the testNoDefaultValueCalledWhenOverrideIsSet test.
+		 * **MUST** be done _before_ the test is initialized. */
+		if Thread.isMainThread {
+			MainActor.assumeIsolated{
+				Conf.setRootValue(NotTrackedInitTrackedServiceMainActor(), for: \.initTrackedServiceMainActor)
+			}
+		} else {
+			DispatchQueue.main.sync{
+				Conf.setRootValue(NotTrackedInitTrackedServiceMainActor(), for: \.initTrackedServiceMainActor)
+			}
+		}
+	}
+	
 	@MainActor
 	func testUsingMainActorService() {
 		MainActor.preconditionIsolated()
@@ -62,6 +78,41 @@ final class UsageMainActorTests : XCTestCase {
 		@InjectedConf(\.mainActorService2)
 		var otherMainActorService: MainActorService
 		
+		@InjectedConf(\.initTrackedServiceMainActor)
+		var initTrackedServiceMainActor: InitTrackedServiceMainActor
+		
 	}
 	
+	
+	@MainActor
+	func testNoDefaultValueCalledWhenOverrideIsSet() {
+		let c = MainActorContainer()
+		_ = c.initTrackedServiceMainActor
+		_ = Conf[\.initTrackedServiceMainActor]
+		XCTAssertEqual(DefaultInitTrackedServiceMainActor.initCount, 0)
+	}
+	
+}
+
+
+protocol InitTrackedServiceMainActor : Sendable {}
+struct DefaultInitTrackedServiceMainActor : InitTrackedServiceMainActor {
+	
+	static var initCount: Int {
+		initLock.withLock{ _initCount }
+	}
+	nonisolated(unsafe) static var _initCount: Int = 0
+	private static let initLock = NSLock()
+	
+	init() {
+		Self.initLock.withLock{
+			Self._initCount += 1
+		}
+	}
+	
+}
+struct NotTrackedInitTrackedServiceMainActor : InitTrackedServiceMainActor {
+}
+extension ConfKeys {
+	#declareServiceKey(visibility: .internal, "initTrackedServiceMainActor", InitTrackedServiceMainActor.self, on: MainActor.self, defaultValue: DefaultInitTrackedServiceMainActor())
 }
