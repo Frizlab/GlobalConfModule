@@ -8,6 +8,14 @@ import GlobalConfModule
 
 final class UsageTests : XCTestCase {
 	
+	class override func setUp() {
+		super.setUp()
+		
+		/* For the testNoDefaultValueCalledWhenOverrideIsSet test.
+		 * **MUST** be done _before_ the test is initialized. */
+		Conf.setRootValue(NotTrackedInitTrackedService(), for: \.initTrackedService)
+	}
+	
 	func testUsingNoActorService() {
 		noActorService.printHello()
 		noActorServiceFromKeyPath.printHello()
@@ -30,13 +38,9 @@ final class UsageTests : XCTestCase {
 	
 	
 	func testNoDefaultValueCalledWhenOverrideIsSet() {
-		testNoDefaultValueCalledWhenOverrideIsSetLock.lock()
-		defer {testNoDefaultValueCalledWhenOverrideIsSetLock.unlock()}
-		
-		let initialCount = DefaultInitTrackedService.initCount
-		Conf.setRootValue(NotTrackedInitTrackedService(), for: \.initTrackedService)
 		_ = initTrackedService
-		XCTAssertEqual(DefaultInitTrackedService.initCount, initialCount)
+		_ = Conf[\.initTrackedService]
+		XCTAssertEqual(DefaultInitTrackedService.initCount, 0)
 	}
 	
 	private let testNoDefaultValueCalledWhenOverrideIsSetLock = NSLock()
