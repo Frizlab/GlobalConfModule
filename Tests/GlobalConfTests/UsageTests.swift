@@ -28,4 +28,43 @@ final class UsageTests : XCTestCase {
 	@InjectedConf(\.noActorFactoryService)
 	var noActorFactoryService: NoActorService
 	
+	
+	func testNoDefaultValueCalledWhenOverrideIsSet() {
+		testNoDefaultValueCalledWhenOverrideIsSetLock.lock()
+		defer {testNoDefaultValueCalledWhenOverrideIsSetLock.unlock()}
+		
+		let initialCount = DefaultInitTrackedService.initCount
+		Conf.setRootValue(NotTrackedInitTrackedService(), for: \.initTrackedService)
+		_ = initTrackedService
+		XCTAssertEqual(DefaultInitTrackedService.initCount, initialCount)
+	}
+	
+	private let testNoDefaultValueCalledWhenOverrideIsSetLock = NSLock()
+	
+	@InjectedConf(\.initTrackedService)
+	var initTrackedService: InitTrackedService
+	
+}
+
+
+protocol InitTrackedService : Sendable {}
+struct DefaultInitTrackedService : InitTrackedService {
+	
+	static var initCount: Int {
+		initLock.withLock{ _initCount }
+	}
+	nonisolated(unsafe) static var _initCount: Int = 0
+	private static let initLock = NSLock()
+	
+	init() {
+		Self.initLock.withLock{
+			Self._initCount += 1
+		}
+	}
+	
+}
+struct NotTrackedInitTrackedService : InitTrackedService {
+}
+extension ConfKeys {
+	#declareServiceKey(visibility: .internal, "initTrackedService", InitTrackedService.self, defaultValue: DefaultInitTrackedService())
 }
