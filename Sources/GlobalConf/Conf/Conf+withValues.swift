@@ -6,7 +6,7 @@ import ServiceContextModule
 
 public extension Conf {
 	
-	/* *** Overridding multiple injected values for the current Task. *** */
+	/* *** Overriding multiple injected values for the current Task. *** */
 	
 	static func withValues<T>(contextSetBlock: (inout ConfContext) -> Void, operation: () throws -> T) rethrows -> T {
 		var newContext = ConfContext(Conf.currentContext)

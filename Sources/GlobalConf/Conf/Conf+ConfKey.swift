@@ -25,7 +25,7 @@ public extension Conf {
 		return value(for: keyPath)
 	}
 	
-	/* *** Overridding the value for a given key (or key path) for the current Task for a synchronous operation. *** */
+	/* *** Overriding the value for a given key (or key path) for the current Task for a synchronous operation. *** */
 	
 	static func withValue<InjectedKey : ConfKey, T>(_ newValue: InjectedKey.Value, for keyType: InjectedKey.Type = InjectedKey.self, operation: () throws -> T) rethrows -> T {
 		var newContext = Conf.currentContext
@@ -38,7 +38,7 @@ public extension Conf {
 		return try withValue(newValue, for: InjectedKey.self, operation: operation)
 	}
 	
-	/* *** Overridding the value for a given key (or key path) for the current Task for an asynchronous operation. *** */
+	/* *** Overriding the value for a given key (or key path) for the current Task for an asynchronous operation. *** */
 
 	static func withValue<InjectedKey : ConfKey, T>(_ newValue: InjectedKey.Value, for keyType: InjectedKey.Type = InjectedKey.self, operation: () async throws -> T, isolation: isolated (any Actor)? = #isolation) async rethrows -> T {
 		var newContext = Conf.currentContext
