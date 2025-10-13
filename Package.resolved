@@ -1,13 +1,13 @@
 {
-  "originHash" : "0dcea7bfc7f880d940928e86e00338dfbfe6306794c9c41bd2ee306202124a03",
+  "originHash" : "c492264dddea651d371ebb47348d0d0022c0d26a170d186400d94a1c5b85ad93",
   "pins" : [
     {
       "identity" : "swift-service-context",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-service-context.git",
       "state" : {
-        "revision" : "0c62c5b4601d6c125050b5c3a97f20cce881d32b",
-        "version" : "1.1.0"
+        "revision" : "1983448fefc717a2bc2ebde5490fe99873c5b8a6",
+        "version" : "1.2.1"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
-        "version" : "601.0.1"
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
       }
     }
   ],
